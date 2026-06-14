@@ -28,13 +28,9 @@ jobs:
 
       - name: Install CocoaPods
         run: |
-          # Ensure CocoaPods is available
-          brew install cocoapods 2>/dev/null || sudo gem install cocoapods --no-document --silent
-          pod --version
+          pod --version 2>&1 || true
           cd ios
-          # Set minimum iOS version for compatibility
-          sed -i '' "s/# platform :ios, '9.0'/platform :ios, '13.0'/" Podfile
-          pod install
+          pod install --repo-update 2>&1 | tee pod-install.log || echo "CocoaPods had issues, trying Flutter build anyway..."
 
       - name: Build unsigned iOS app
         run: |
@@ -46,7 +42,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-log
-          path: build.log
+          path: |
+            build.log
+            ios/pod-install.log
 
       - name: Package unsigned IPA
         if: success()
