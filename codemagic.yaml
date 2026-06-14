@@ -6,6 +6,9 @@ workflows:
       flutter: stable
       xcode: latest
     scripts:
+      - flutter create --project-name clarity /tmp/plat_gen
+      - cp -R /tmp/plat_gen/ios .
+      - cp -R /tmp/plat_gen/android .
       - flutter pub get
       - flutter build ios --release --no-codesign
     artifacts:
@@ -16,6 +19,8 @@ workflows:
     environment:
       flutter: stable
     scripts:
+      - flutter create --project-name clarity /tmp/plat_gen
+      - cp -R /tmp/plat_gen/android .
       - flutter pub get
       - flutter build apk --release
     artifacts:
