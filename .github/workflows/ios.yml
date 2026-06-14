@@ -26,6 +26,9 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Run analysis
+        run: flutter analyze 2>&1 | tee analysis.log
+
       - name: Install CocoaPods
         run: |
           cd ios
@@ -36,12 +39,19 @@ jobs:
           flutter build ios --release --no-codesign --verbose 2>&1 | tee build.log
           exit ${PIPESTATUS[0]}
 
-      - name: Upload build log on failure
+      - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: build-log
           path: build.log
+
+      - name: Upload analysis log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: analysis-log
+          path: analysis.log
 
       - name: Upload pod-install log on failure
         if: failure()
@@ -49,6 +59,7 @@ jobs:
         with:
           name: pod-install-log
           path: ios/pod-install.log
+
 
       - name: Package unsigned IPA
         if: success()

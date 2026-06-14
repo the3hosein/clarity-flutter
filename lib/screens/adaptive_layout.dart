@@ -34,17 +34,19 @@ class _AdaptiveLayoutScreenState extends State<AdaptiveLayoutScreen> {
     final appState = context.read<AppState>();
     if (appState.showToast) {
       _toastTimer?.cancel();
-      final messenger = ScaffoldMessenger.of(context);
-      messenger.hideCurrentSnackBar();
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(appState.toastMessage ?? '', style: GoogleFonts.inter()),
-          backgroundColor: const Color(0xFF7C5CFC),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      try {
+        final messenger = ScaffoldMessenger.of(context);
+        messenger.hideCurrentSnackBar();
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(appState.toastMessage ?? '', style: GoogleFonts.inter()),
+            backgroundColor: const Color(0xFF7C5CFC),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } catch (_) {}
       _toastTimer = Timer(const Duration(milliseconds: 100), () {
         if (mounted) context.read<AppState>().dismissToast();
       });
