@@ -22,6 +22,9 @@ jobs:
           flutter create --project-name clarity --platforms=ios .
           cd ios
           sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = com.example.clarity;/PRODUCT_BUNDLE_IDENTIFIER = com.clarity.app;/' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM = .*;/DEVELOPMENT_TEAM = "";/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = .*;/PROVISIONING_PROFILE_SPECIFIER = "";/g' Runner.xcodeproj/project.pbxproj
 
       - name: Get dependencies
         run: flutter pub get
