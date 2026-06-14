@@ -23,8 +23,11 @@ jobs:
           cd ios
           sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = com.example.clarity;/PRODUCT_BUNDLE_IDENTIFIER = com.clarity.app;/' Runner.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/DEVELOPMENT_TEAM = .*;/DEVELOPMENT_TEAM = "";/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = .*;/PROVISIONING_PROFILE_SPECIFIER = "";/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM = [^;]*;/DEVELOPMENT_TEAM = "";/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = [^;]*;/PROVISIONING_PROFILE_SPECIFIER = "";/g' Runner.xcodeproj/project.pbxproj
+          # Verify the settings took effect
+          echo "=== Code Sign Settings in pbxproj ===" | tee -a /tmp/ios-setup.log
+          grep -E 'CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING' Runner.xcodeproj/project.pbxproj | tee -a /tmp/ios-setup.log
 
       - name: Get dependencies
         run: flutter pub get
@@ -60,7 +63,7 @@ jobs:
         if: failure()
         run: |
           if [ -s build.log ]; then
-            echo "::error title=iOS Build Failed,file=build.log::$(tail -10 build.log)"
+            echo "::error title=iOS Build Failed,file=build.log::$(tail -20 build.log)"
           fi
           echo "# ❌ iOS Build Failed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -82,6 +85,11 @@ jobs:
           echo '## Pod Install Log' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat ios/pod-install.log 2>/dev/null || echo "No pod-install log" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '## iOS Setup Log (pbxproj check)' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/ios-setup.log 2>/dev/null || echo "No ios-setup log" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload logs on failure
