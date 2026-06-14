@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/calendar_provider.dart';
 import '../../models/calendar_event.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/empty_state.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -35,16 +38,36 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
   Widget build(BuildContext context) {
     final cal = context.watch<CalendarProvider>();
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0F),
       appBar: AppBar(
-        title: Text(DateFormat('MMMM yyyy').format(cal.selectedDate)),
+        backgroundColor: const Color(0xFF0A0A0F),
+        title: Text(DateFormat('MMMM yyyy').format(cal.selectedDate), style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600)),
         centerTitle: true,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Month'),
-            Tab(text: 'Week'),
-            Tab(text: 'Agenda'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: const Color(0x1AFFFFFF),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: const Color(0xFF7C5CFC),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+              unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
+              tabs: const [
+                Tab(text: 'Month'),
+                Tab(text: 'Week'),
+                Tab(text: 'Agenda'),
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -56,7 +79,8 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+        backgroundColor: const Color(0xFF7C5CFC),
+        child: const Icon(Icons.add, color: Colors.white),
         onPressed: () => _showEventEditor(context, null, cal),
       ),
     );
@@ -73,6 +97,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: const Color(0xFF0A0A0F),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setInner) => Padding(
@@ -81,20 +106,41 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(2))),
               const SizedBox(height: 16),
-              Text(existing != null ? 'Edit Event' : 'New Event', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              Text(existing != null ? 'Edit Event' : 'New Event', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
               const SizedBox(height: 16),
-              TextField(controller: titleC, decoration: const InputDecoration(labelText: 'Title', border: OutlineInputBorder())),
+              TextField(
+                controller: titleC,
+                style: GoogleFonts.inter(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  labelStyle: GoogleFonts.inter(color: Colors.white54),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                  focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
+                ),
+              ),
               const SizedBox(height: 12),
-              TextField(controller: descC, decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder())),
+              TextField(
+                controller: descC,
+                style: GoogleFonts.inter(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  labelStyle: GoogleFonts.inter(color: Colors.white54),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                  focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
+                ),
+              ),
               const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      icon: const Icon(Icons.calendar_today, size: 18),
-                      label: Text(DateFormat('MMM d').format(startDate)),
+                      icon: const Icon(Icons.calendar_today, size: 18, color: Colors.white54),
+                      label: Text(DateFormat('MMM d').format(startDate), style: GoogleFonts.inter(color: Colors.white)),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.white.withOpacity(0.08)),
+                      ),
                       onPressed: () async {
                         final d = await showDatePicker(context: ctx, initialDate: startDate, firstDate: DateTime(2020), lastDate: DateTime(2030));
                         if (d != null) setInner(() { startDate = d; });
@@ -104,8 +150,11 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                   const SizedBox(width: 8),
                   Expanded(
                     child: OutlinedButton.icon(
-                      icon: const Icon(Icons.access_time, size: 18),
-                      label: Text(startTime.format(ctx)),
+                      icon: const Icon(Icons.access_time, size: 18, color: Colors.white54),
+                      label: Text(startTime.format(ctx), style: GoogleFonts.inter(color: Colors.white)),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.white.withOpacity(0.08)),
+                      ),
                       onPressed: () async {
                         final t = await showTimePicker(context: ctx, initialTime: startTime);
                         if (t != null) setInner(() => startTime = t);
@@ -119,8 +168,11 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      icon: const Icon(Icons.calendar_today, size: 18),
-                      label: Text(DateFormat('MMM d').format(endDate)),
+                      icon: const Icon(Icons.calendar_today, size: 18, color: Colors.white54),
+                      label: Text(DateFormat('MMM d').format(endDate), style: GoogleFonts.inter(color: Colors.white)),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.white.withOpacity(0.08)),
+                      ),
                       onPressed: () async {
                         final d = await showDatePicker(context: ctx, initialDate: endDate, firstDate: DateTime(2020), lastDate: DateTime(2030));
                         if (d != null) setInner(() => endDate = d);
@@ -130,8 +182,11 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                   const SizedBox(width: 8),
                   Expanded(
                     child: OutlinedButton.icon(
-                      icon: const Icon(Icons.access_time, size: 18),
-                      label: Text(endTime.format(ctx)),
+                      icon: const Icon(Icons.access_time, size: 18, color: Colors.white54),
+                      label: Text(endTime.format(ctx), style: GoogleFonts.inter(color: Colors.white)),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.white.withOpacity(0.08)),
+                      ),
                       onPressed: () async {
                         final t = await showTimePicker(context: ctx, initialTime: endTime);
                         if (t != null) setInner(() => endTime = t);
@@ -142,6 +197,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
               ),
               const SizedBox(height: 16),
               FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: const Color(0xFF7C5CFC)),
                 onPressed: () {
                   final event = CalendarEvent(
                     id: existing?.id,
@@ -153,7 +209,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                   cal.saveEvent(event);
                   Navigator.pop(ctx);
                 },
-                child: const Text('Save'),
+                child: Text('Save', style: GoogleFonts.inter()),
               ),
               const SizedBox(height: 24),
             ],
@@ -187,19 +243,20 @@ class _MonthView extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Row(
             children: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-                .map((d) => Expanded(child: Center(child: Text(d, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey)))))
+                .map((d) => Expanded(child: Center(child: Text(d, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0x99FFFFFF))))))
                 .toList(),
           ),
         ),
         // Grid
         Expanded(
+          flex: 3,
           child: GridView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 7,
               childAspectRatio: 1,
-              mainAxisSpacing: 2,
-              crossAxisSpacing: 2,
+              mainAxisSpacing: 4,
+              crossAxisSpacing: 4,
             ),
             itemCount: weeks * 7,
             itemBuilder: (_, i) {
@@ -215,23 +272,25 @@ class _MonthView extends StatelessWidget {
                 onTap: () => cal.setSelectedDate(d),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isSelected ? Theme.of(context).colorScheme.primary : null,
+                    color: isSelected ? const Color(0xFF7C5CFC) : const Color(0x1AFFFFFF),
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.white.withOpacity(0.08)),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         '${d.day}',
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : (isToday ? Theme.of(context).colorScheme.primary : null),
+                        style: GoogleFonts.inter(
+                          color: isSelected ? Colors.white : (isToday ? const Color(0xFF7C5CFC) : Colors.white),
                           fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                          fontSize: 13,
                         ),
                       ),
                       if (hasEvent)
                         Container(
                           width: 5, height: 5,
-                          decoration: BoxDecoration(color: isSelected ? Colors.white : Theme.of(context).colorScheme.primary, shape: BoxShape.circle),
+                          decoration: const BoxDecoration(color: Color(0xFF7C5CFC), shape: BoxShape.circle),
                         ),
                     ],
                   ),
@@ -245,26 +304,49 @@ class _MonthView extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Text('Events for ${DateFormat('MMM d').format(cal.selectedDate)}', style: const TextStyle(fontWeight: FontWeight.w600)),
+              Text('Events for ${DateFormat('MMM d').format(cal.selectedDate)}', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white)),
               const Spacer(),
-              TextButton(onPressed: () => cal.setSelectedDate(DateTime.now()), child: const Text('Today')),
+              TextButton(
+                onPressed: () => cal.setSelectedDate(DateTime.now()),
+                child: Text('Today', style: GoogleFonts.inter(color: const Color(0xFF7C5CFC))),
+              ),
             ],
           ),
         ),
         Expanded(
+          flex: 4,
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             children: cal.eventsForDate(cal.selectedDate).isEmpty
-                ? [const Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No events', style: TextStyle(color: Colors.grey))))]
-                : cal.eventsForDate(cal.selectedDate).map((e) => Card(
-                      child: ListTile(
-                        leading: Container(width: 4, height: 40, color: Theme.of(context).colorScheme.primary),
-                        title: Text(e.title),
-                        subtitle: Text('${DateFormat('HH:mm').format(e.startDate)} - ${DateFormat('HH:mm').format(e.endDate)}'),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 20),
-                          onPressed: () => cal.deleteEvent(e.id),
-                        ),
+                ? [EmptyState(
+                    icon: Icons.event_busy,
+                    title: 'No Events',
+                    subtitle: 'Tap + to add an event for this day.',
+                  )]
+                : cal.eventsForDate(cal.selectedDate).map((e) => GlassCard(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      child: Row(
+                        children: [
+                          Container(width: 4, height: 40, decoration: BoxDecoration(color: const Color(0xFF7C5CFC), borderRadius: BorderRadius.circular(2))),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(e.title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 14)),
+                                const SizedBox(height: 2),
+                                Text('${DateFormat('HH:mm').format(e.startDate)} - ${DateFormat('HH:mm').format(e.endDate)}',
+                                    style: GoogleFonts.inter(fontSize: 11, color: const Color(0x99FFFFFF))),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline, size: 20),
+                            color: Colors.white54,
+                            onPressed: () => cal.deleteEvent(e.id),
+                          ),
+                        ],
                       ),
                     )).toList(),
           ),
@@ -283,60 +365,83 @@ class _WeekView extends StatelessWidget {
     final weekStart = cal.selectedDate.subtract(Duration(days: cal.selectedDate.weekday - 1));
     final weekDays = List.generate(7, (i) => weekStart.add(Duration(days: i)));
 
-    return Column(
-      children: [
-        // Week header
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Row(
-            children: weekDays.map((d) {
-              final isSelected = d.day == cal.selectedDate.day;
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () => cal.setSelectedDate(d),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Theme.of(context).colorScheme.primary : null,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.weekday % 7],
-                            style: TextStyle(fontSize: 11, color: isSelected ? Colors.white : Colors.grey)),
-                        Text('${d.day}',
-                            style: TextStyle(fontWeight: FontWeight.bold, color: isSelected ? Colors.white : null)),
-                      ],
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0F),
+      body: Column(
+        children: [
+          // Week header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              children: weekDays.map((d) {
+                final isSelected = d.day == cal.selectedDate.day;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => cal.setSelectedDate(d),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isSelected ? const Color(0xFF7C5CFC) : const Color(0x1AFFFFFF),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.white.withOpacity(0.08)),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.weekday % 7],
+                              style: GoogleFonts.inter(fontSize: 11, color: isSelected ? Colors.white : const Color(0x99FFFFFF))),
+                          Text('${d.day}',
+                              style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: isSelected ? Colors.white : Colors.white)),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
-        ),
-        const Divider(),
-        // Events
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: cal.eventsForDate(cal.selectedDate).isEmpty
-                ? [Center(child: Padding(padding: const EdgeInsets.all(32), child: Text('No events', style: TextStyle(color: Colors.grey[400]))))]
-                : cal.eventsForDate(cal.selectedDate).map((e) => Card(
-                      child: ListTile(
-                        leading: Container(width: 4, height: 40, color: Theme.of(context).colorScheme.primary),
-                        title: Text(e.title),
-                        subtitle: e.notes.isNotEmpty
-                            ? Text(e.notes)
-                            : Text('${DateFormat('HH:mm').format(e.startDate)} - ${DateFormat('HH:mm').format(e.endDate)}'),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 20),
-                          onPressed: () => cal.deleteEvent(e.id),
+          const SizedBox(height: 8),
+          // Events
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: cal.eventsForDate(cal.selectedDate).isEmpty
+                  ? [EmptyState(
+                      icon: Icons.event_busy,
+                      title: 'No Events',
+                      subtitle: 'Tap + to add an event for this day.',
+                    )]
+                  : cal.eventsForDate(cal.selectedDate).map((e) => GlassCard(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        child: Row(
+                          children: [
+                            Container(width: 4, height: 40, decoration: BoxDecoration(color: const Color(0xFF7C5CFC), borderRadius: BorderRadius.circular(2))),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(e.title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 14)),
+                                  const SizedBox(height: 2),
+                                  e.notes.isNotEmpty
+                                      ? Text(e.notes, style: GoogleFonts.inter(fontSize: 11, color: const Color(0x99FFFFFF)))
+                                      : Text('${DateFormat('HH:mm').format(e.startDate)} - ${DateFormat('HH:mm').format(e.endDate)}',
+                                          style: GoogleFonts.inter(fontSize: 11, color: const Color(0x99FFFFFF))),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, size: 20),
+                              color: Colors.white54,
+                              onPressed: () => cal.deleteEvent(e.id),
+                            ),
+                          ],
                         ),
-                      ),
-                    )).toList(),
+                      )).toList(),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -350,15 +455,10 @@ class _AgendaView extends StatelessWidget {
   Widget build(BuildContext context) {
     final sorted = List<CalendarEvent>.from(cal.events)..sort((a, b) => a.startDate.compareTo(b.startDate));
     if (sorted.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.event_busy, size: 64, color: Colors.grey[300]),
-            const SizedBox(height: 16),
-            const Text('No events', style: TextStyle(color: Colors.grey)),
-          ],
-        ),
+      return const EmptyState(
+        icon: Icons.event_busy,
+        title: 'No Events',
+        subtitle: 'Your calendar is clear. Tap + to add an event.',
       );
     }
 
@@ -377,18 +477,33 @@ class _AgendaView extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(entry.key, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              child: Text(entry.key, style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
             ),
-            ...entry.value.map((e) => Card(
-                  child: ListTile(
-                    leading: Container(width: 4, height: 40, color: Theme.of(context).colorScheme.primary),
-                    title: Text(e.title),
-                    subtitle: Text('${DateFormat('HH:mm').format(e.startDate)} - ${DateFormat('HH:mm').format(e.endDate)}'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, size: 20),
-                      onPressed: () => cal.deleteEvent(e.id),
-                    ),
-                    onTap: () => onEditEvent(e),
+            ...entry.value.map((e) => GlassCard(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  onTap: () => onEditEvent(e),
+                  child: Row(
+                    children: [
+                      Container(width: 4, height: 40, decoration: BoxDecoration(color: const Color(0xFF7C5CFC), borderRadius: BorderRadius.circular(2))),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(e.title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 14)),
+                            const SizedBox(height: 2),
+                            Text('${DateFormat('HH:mm').format(e.startDate)} - ${DateFormat('HH:mm').format(e.endDate)}',
+                                style: GoogleFonts.inter(fontSize: 11, color: const Color(0x99FFFFFF))),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 20),
+                        color: Colors.white54,
+                        onPressed: () => cal.deleteEvent(e.id),
+                      ),
+                    ],
                   ),
                 )),
           ],

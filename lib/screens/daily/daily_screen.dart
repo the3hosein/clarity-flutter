@@ -1,10 +1,14 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../providers/daily_provider.dart';
 import '../../models/lesson.dart';
 import '../../models/sleep_log.dart';
 import '../../models/social_platform.dart';
 import '../../models/habit.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/empty_state.dart';
 
 class DailyScreen extends StatefulWidget {
   const DailyScreen({super.key});
@@ -32,18 +36,44 @@ class _DailyScreenState extends State<DailyScreen> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final daily = context.watch<DailyProvider>();
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0F),
       appBar: AppBar(
-        title: const Text('Daily OS'),
+        backgroundColor: const Color(0xFF0A0A0F),
+        title: Text('Daily OS', style: GoogleFonts.inter()),
         centerTitle: true,
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          tabs: const [
-            Tab(text: 'Lessons'),
-            Tab(text: 'Sleep'),
-            Tab(text: 'Social'),
-            Tab(text: 'Habits'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0x1AFFFFFF),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.white.withOpacity(0.08)),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  indicator: BoxDecoration(
+                    color: const Color(0xFF7C5CFC).withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+                  unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
+                  tabs: const [
+                    Tab(text: 'Lessons'),
+                    Tab(text: 'Sleep'),
+                    Tab(text: 'Social'),
+                    Tab(text: 'Habits'),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -67,41 +97,65 @@ class _LessonsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final lessons = daily.lessons;
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0F),
       body: lessons.isEmpty
-          ? const Center(child: Text('No lessons'))
+          ? EmptyState(
+              icon: Icons.menu_book_outlined,
+              title: 'No lessons yet',
+              subtitle: 'Add your first lesson to get started',
+              actionLabel: 'Add Lesson',
+              onAction: () => _addLesson(context, daily),
+            )
           : ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: lessons.length,
               itemBuilder: (_, i) {
                 final l = lessons[i];
-                return Card(
-                  child: ListTile(
-                    leading: CircleAvatar(child: Text(l.subject.isNotEmpty ? l.subject[0] : '?')),
-                    title: Text(l.subject),
-                    subtitle: Text(l.status),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (l.status == 'pending')
-                          IconButton(
-                            icon: const Icon(Icons.check, color: Colors.green),
-                            onPressed: () => daily.updateLesson(Lesson(
-                              id: l.id, subject: l.subject, dayOfWeek: l.dayOfWeek,
-                              startTime: l.startTime, endTime: l.endTime, colorHex: l.colorHex,
-                              status: 'done',
-                            )),
-                          ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 20),
-                          onPressed: () => daily.deleteLesson(l.id),
+                return GlassCard(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      GlassCard(
+                        borderRadius: 100,
+                        padding: EdgeInsets.zero,
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: Colors.transparent,
+                          child: Text(l.subject.isNotEmpty ? l.subject[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: const Color(0xFF7C5CFC))),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(l.subject, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: Colors.white)),
+                            const SizedBox(height: 2),
+                            Text(l.status, style: GoogleFonts.inter(fontSize: 12, color: const Color(0x99FFFFFF))),
+                          ],
+                        ),
+                      ),
+                      if (l.status == 'pending')
+                        IconButton(
+                          icon: const Icon(Icons.check_circle_outline, color: Color(0xFF7C5CFC)),
+                          onPressed: () => daily.updateLesson(Lesson(
+                            id: l.id, subject: l.subject, dayOfWeek: l.dayOfWeek,
+                            startTime: l.startTime, endTime: l.endTime, colorHex: l.colorHex,
+                            status: 'done',
+                          )),
+                        ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 20, color: Color(0x66FFFFFF)),
+                        onPressed: () => daily.deleteLesson(l.id),
+                      ),
+                    ],
                   ),
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF7C5CFC),
         child: const Icon(Icons.add),
         onPressed: () => _addLesson(context, daily),
       ),
@@ -115,7 +169,7 @@ class _LessonsTab extends StatelessWidget {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setInner) => AlertDialog(
-          title: const Text('New Lesson'),
+          title: Text('New Lesson', style: GoogleFonts.inter()),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -165,32 +219,46 @@ class _SleepTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final logs = daily.sleepLogs;
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0F),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  const Text('Average Sleep', style: TextStyle(color: Colors.grey)),
-                  const SizedBox(height: 8),
-                  Text('${daily.averageSleep.toStringAsFixed(1)}h', style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold)),
-                ],
-              ),
+          GlassCard(
+            child: Column(
+              children: [
+                Text('Average Sleep', style: GoogleFonts.inter(color: const Color(0x99FFFFFF), fontSize: 13)),
+                const SizedBox(height: 8),
+                Text('${daily.averageSleep.toStringAsFixed(1)}h', style: GoogleFonts.inter(fontSize: 36, fontWeight: FontWeight.bold, color: const Color(0xFF7C5CFC))),
+              ],
             ),
           ),
           const SizedBox(height: 16),
-          ...logs.reversed.take(7).map((log) => Card(
-                child: ListTile(
-                  leading: const Icon(Icons.bed, color: Colors.indigo),
-                  title: Text(log.date.toString().substring(0, 10)),
-                  trailing: Text('${log.durationHours.toStringAsFixed(1)}h'),
-                ),
-              )),
+          if (logs.isEmpty)
+            EmptyState(
+              icon: Icons.bedtime_outlined,
+              title: 'No sleep logs',
+              subtitle: 'Log your sleep to track patterns',
+              actionLabel: 'Log Sleep',
+              onAction: () => _logSleep(context, daily),
+            )
+          else
+            ...logs.reversed.take(7).map((log) => GlassCard(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.bed, color: Color(0xFF7C5CFC), size: 20),
+                      const SizedBox(width: 12),
+                      Text(log.date.toString().substring(0, 10), style: GoogleFonts.inter(color: Colors.white)),
+                      const Spacer(),
+                      Text('${log.durationHours.toStringAsFixed(1)}h', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: const Color(0xFF7C5CFC))),
+                    ],
+                  ),
+                )),
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF7C5CFC),
         child: const Icon(Icons.add),
         onPressed: () => _logSleep(context, daily),
       ),
@@ -265,27 +333,52 @@ class _SocialTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0F),
       body: daily.socialPlatforms.isEmpty
-          ? const Center(child: Text('No platforms'))
+          ? EmptyState(
+              icon: Icons.public_outlined,
+              title: 'No platforms',
+              subtitle: 'Add social platforms to track your usage',
+              actionLabel: 'Add Platform',
+              onAction: () => _addPlatform(context, daily),
+            )
           : ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: daily.socialPlatforms.length,
               itemBuilder: (_, i) {
                 final p = daily.socialPlatforms[i];
-                return Card(
-                  child: ListTile(
-                    leading: Icon(_platformIcon(p.name), color: _platformColor(p.name)),
-                    title: Text(p.name),
-                    subtitle: Text('Daily limit: ${p.dailyLimitMinutes}min'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, size: 20),
-                      onPressed: () => daily.deleteSocialPlatform(p.id),
-                    ),
+                return GlassCard(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      GlassCard(
+                        borderRadius: 12,
+                        padding: const EdgeInsets.all(10),
+                        child: Icon(_platformIcon(p.name), color: _platformColor(p.name), size: 22),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(p.name, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: Colors.white)),
+                            const SizedBox(height: 2),
+                            Text('Daily limit: ${p.dailyLimitMinutes}min', style: GoogleFonts.inter(fontSize: 12, color: const Color(0x99FFFFFF))),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 20, color: Color(0x66FFFFFF)),
+                        onPressed: () => daily.deleteSocialPlatform(p.id),
+                      ),
+                    ],
                   ),
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF7C5CFC),
         child: const Icon(Icons.add),
         onPressed: () => _addPlatform(context, daily),
       ),
@@ -340,31 +433,65 @@ class _HabitsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0F),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text('Today\'s Habits', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('Today\'s Habits', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
           const SizedBox(height: 16),
           if (daily.habits.isEmpty)
-            const Center(child: Text('No habits yet'))
+            EmptyState(
+              icon: Icons.checklist_outlined,
+              title: 'No habits yet',
+              subtitle: 'Create habits to build your daily routine',
+              actionLabel: 'Add Habit',
+              onAction: () => _addHabit(context, daily),
+            )
           else
-            ...daily.habits.map((h) => Card(
-                  child: ListTile(
-                    leading: Checkbox(
-                      value: daily.isHabitDoneToday(h.id),
-                      onChanged: (_) => daily.toggleHabit(h.id),
-                    ),
-                    title: Text(h.name),
-                    subtitle: Text('Done ${h.completedDates.length} times'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, size: 20),
-                      onPressed: () => daily.deleteHabit(h.id),
-                    ),
+            ...daily.habits.map((h) => GlassCard(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => daily.toggleHabit(h.id),
+                        child: GlassCard(
+                          borderRadius: 8,
+                          padding: const EdgeInsets.all(2),
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: daily.isHabitDoneToday(h.id)
+                                ? const Icon(Icons.check, size: 18, color: Color(0xFF7C5CFC))
+                                : null,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(h.name, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: Colors.white)),
+                            const SizedBox(height: 2),
+                            Text('Done ${h.completedDates.length} times', style: GoogleFonts.inter(fontSize: 12, color: const Color(0x99FFFFFF))),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 20, color: Color(0x66FFFFFF)),
+                        onPressed: () => daily.deleteHabit(h.id),
+                      ),
+                    ],
                   ),
                 )),
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF7C5CFC),
         child: const Icon(Icons.add),
         onPressed: () => _addHabit(context, daily),
       ),

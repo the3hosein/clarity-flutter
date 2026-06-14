@@ -1,10 +1,14 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../providers/mind_provider.dart';
 import '../../widgets/animated_progress.dart';
 import '../../models/target.dart';
 import '../../models/journal_entry.dart';
 import '../../models/channel.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/empty_state.dart';
 
 class MindScreen extends StatefulWidget {
   const MindScreen({super.key});
@@ -31,16 +35,42 @@ class _MindScreenState extends State<MindScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0F),
       appBar: AppBar(
-        title: const Text('Mind'),
+        backgroundColor: const Color(0xFF0A0A0F),
+        title: Text('Mind', style: GoogleFonts.inter()),
         centerTitle: true,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Targets'),
-            Tab(text: 'Channels'),
-            Tab(text: 'Journal'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0x1AFFFFFF),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.white.withOpacity(0.08)),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  indicator: BoxDecoration(
+                    color: const Color(0xFF7C5CFC).withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+                  unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
+                  tabs: const [
+                    Tab(text: 'Targets'),
+                    Tab(text: 'Channels'),
+                    Tab(text: 'Journal'),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -64,71 +94,57 @@ class _TargetsTab extends StatelessWidget {
     final target = mind.mainTarget;
 
     if (target == null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.track_changes_outlined, size: 64, color: Colors.grey[300]),
-            const SizedBox(height: 16),
-            const Text('Set Your Main Target', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
-            FilledButton(onPressed: () => _showTargetEdit(context, null, mind), child: const Text('Add Target')),
-          ],
-        ),
+      return EmptyState(
+        icon: Icons.track_changes_outlined,
+        title: 'Set Your Main Target',
+        subtitle: 'Define a target and track your progress',
+        actionLabel: 'Add Target',
+        onAction: () => _showTargetEdit(context, null, mind),
       );
     }
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Quote
-        Card(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text('"${mind.dailyQuote}"', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey[600])),
-          ),
+        GlassCard(
+          child: Text('"${mind.dailyQuote}"', style: GoogleFonts.inter(fontStyle: FontStyle.italic, color: const Color(0x99FFFFFF), fontSize: 15)),
         ),
         const SizedBox(height: 16),
 
-        // Main target
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('🎯 My Main Target', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                const SizedBox(height: 8),
-                Text(target.title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                ...target.subGoals.map((goal) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(child: Text(goal.title, style: const TextStyle(fontWeight: FontWeight.w500))),
-                              Text('${(goal.progress * 100).round()}%'),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          AnimatedProgressBar(value: goal.progress, color: Theme.of(context).colorScheme.primary),
-                        ],
-                      ),
-                    )),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton.icon(
-                    icon: const Icon(Icons.edit, size: 16),
-                    label: const Text('Edit'),
-                    onPressed: () => _showTargetEdit(context, target, mind),
-                  ),
+        GlassCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('🎯 My Main Target', style: GoogleFonts.inter(fontSize: 12, color: const Color(0x99FFFFFF))),
+              const SizedBox(height: 8),
+              Text(target.title, style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 16),
+              ...target.subGoals.map((goal) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(child: Text(goal.title, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: Colors.white))),
+                            Text('${(goal.progress * 100).round()}%', style: GoogleFonts.inter(color: const Color(0xFF7C5CFC))),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        AnimatedProgressBar(value: goal.progress, color: const Color(0xFF7C5CFC)),
+                      ],
+                    ),
+                  )),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  icon: const Icon(Icons.edit, size: 16, color: Color(0xFF7C5CFC)),
+                  label: Text('Edit', style: GoogleFonts.inter(color: const Color(0xFF7C5CFC))),
+                  onPressed: () => _showTargetEdit(context, target, mind),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],
@@ -216,37 +232,47 @@ class _ChannelsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mind = context.watch<MindProvider>();
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Row(
-          children: [
-            const Text('Channels', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.add_circle_outline),
-              onPressed: () => _showNewChannel(context, mind),
-            ),
-          ],
-        ),
-        if (mind.channels.isEmpty)
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 60),
-              child: Text('No channels yet', style: TextStyle(color: Colors.grey[400])),
-            ),
-          )
-        else
-          ...mind.channels.map((channel) => Card(
-                child: ListTile(
-                  leading: const Icon(Icons.tag, color: Colors.blue),
-                  title: Text(channel.name),
-                  subtitle: Text('${channel.messages.length} messages'),
-                  trailing: const Icon(Icons.chevron_right),
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0F),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Row(
+            children: [
+              Text('Channels', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.add_circle_outline, color: Color(0xFF7C5CFC)),
+                onPressed: () => _showNewChannel(context, mind),
+              ),
+            ],
+          ),
+          if (mind.channels.isEmpty)
+            EmptyState(
+              icon: Icons.tag,
+              title: 'No channels yet',
+              subtitle: 'Create channels to organize your thoughts',
+              actionLabel: 'Create Channel',
+              onAction: () => _showNewChannel(context, mind),
+            )
+          else
+            ...mind.channels.map((channel) => GlassCard(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: EdgeInsets.zero,
                   onTap: () => _showChannelChat(context, channel, mind),
-                ),
-              )),
-      ],
+                  child: ListTile(
+                    leading: GlassCard(
+                      borderRadius: 12,
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(Icons.tag, color: Color(0xFF7C5CFC), size: 20),
+                    ),
+                    title: Text(channel.name, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: Colors.white)),
+                    subtitle: Text('${channel.messages.length} messages', style: GoogleFonts.inter(fontSize: 12, color: const Color(0x99FFFFFF))),
+                    trailing: const Icon(Icons.chevron_right, color: Color(0x66FFFFFF)),
+                  ),
+                )),
+        ],
+      ),
     );
   }
 
@@ -296,8 +322,9 @@ class _ChannelsTab extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: const Color(0x1AFFFFFF),
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white.withOpacity(0.08)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -343,33 +370,44 @@ class _JournalTab extends StatelessWidget {
     final entries = mind.journalEntries;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0F),
       body: entries.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.edit_note, size: 64, color: Colors.grey[300]),
-                  const SizedBox(height: 16),
-                  const Text('No entries yet'),
-                ],
-              ),
+          ? EmptyState(
+              icon: Icons.edit_note_outlined,
+              title: 'No entries yet',
+              subtitle: 'Start journaling to capture your thoughts',
+              actionLabel: 'New Entry',
+              onAction: () => _showJournalEditor(context, null, mind),
             )
           : ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: entries.length,
               itemBuilder: (_, i) {
                 final e = entries[i];
-                return Card(
-                  child: ListTile(
-                    title: Text(e.title.isEmpty ? 'New Note' : e.title),
-                    subtitle: Text(e.body.replaceAll('\n', ' '), maxLines: 2, overflow: TextOverflow.ellipsis),
-                    trailing: Text(e.createdAt.toString().substring(0, 10), style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                    onTap: () => _showJournalEditor(context, e, mind),
+                return GlassCard(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  onTap: () => _showJournalEditor(context, e, mind),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(e.title.isEmpty ? 'New Note' : e.title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white)),
+                          ),
+                          Text(e.createdAt.toString().substring(0, 10), style: GoogleFonts.inter(fontSize: 12, color: const Color(0x99FFFFFF))),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(e.body.replaceAll('\n', ' '), style: GoogleFonts.inter(fontSize: 14, color: const Color(0xCCFFFFFF)), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    ],
                   ),
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF7C5CFC),
         child: const Icon(Icons.add),
         onPressed: () => _showJournalEditor(context, null, mind),
       ),

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../providers/app_state.dart';
 import '../../providers/daily_provider.dart';
 import '../../providers/calendar_provider.dart';
 import '../../models/calendar_event.dart';
 import '../../services/weather_service.dart';
+import '../../widgets/glass_card.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -47,150 +49,212 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final calendar = context.watch<CalendarProvider>();
     final now = DateTime.now();
     final formatter = DateFormat('EEEE, MMMM d');
+    final accent = Theme.of(context).colorScheme.primary;
 
     if (appState.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Home'), centerTitle: true),
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: Text('Home', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
+        centerTitle: true,
+      ),
       body: RefreshIndicator(
         onRefresh: _loadWeather,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // Greeting
-            Text('${appState.greeting}, ${appState.userName} ${appState.avatarEmoji}',
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text(formatter.format(now), style: TextStyle(color: Colors.grey[600], fontSize: 16)),
+            // Greeting with gradient border
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                  colors: [accent, accent.withOpacity(0.2)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              padding: const EdgeInsets.all(1.5),
+              child: GlassCard(
+                borderRadius: 22,
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Text(appState.avatarEmoji, style: const TextStyle(fontSize: 48)),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${appState.greeting}, ${appState.userName}',
+                          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          formatter.format(now),
+                          style: GoogleFonts.inter(fontSize: 14, color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1, duration: 400.ms, curve: Curves.easeOutCubic),
+
             const SizedBox(height: 16),
 
             // Weather
-            _buildWeatherCard(),
+            GlassCard(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Text(_weatherEmoji, style: const TextStyle(fontSize: 40)),
+                  const SizedBox(width: 16),
+                  Text(
+                    _temperature,
+                    style: GoogleFonts.inter(fontSize: 34, fontWeight: FontWeight.w500, color: Colors.white),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "Today's Forecast",
+                    style: GoogleFonts.inter(fontSize: 14, color: Colors.white60),
+                  ),
+                ],
+              ),
+            ).animate().fadeIn(duration: 400.ms, delay: 100.ms).slideX(begin: -0.1, duration: 400.ms, curve: Curves.easeOutCubic),
+
             const SizedBox(height: 16),
 
             // Summary rings
-            _buildSummaryRow(daily),
+            Row(
+              children: [
+                _buildSummaryRing(label: 'Lessons', value: '${daily.lessons.where((l) => l.status == 'done').length}'),
+                _buildSummaryRing(label: 'Sleep', value: '${daily.averageSleep.toStringAsFixed(1)}h'),
+                _buildSummaryRing(label: 'Habits', value: '${daily.habits.where((h) => daily.isHabitDoneToday(h.id)).length}'),
+              ].map((w) => Expanded(child: w)).toList(),
+            ),
+
             const SizedBox(height: 16),
 
             // Next event
-            if (calendar.nextEvent != null) _buildNextEvent(calendar.nextEvent!),
+            if (calendar.nextEvent != null)
+              GlassCard(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 4, height: 40,
+                      decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2)),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Next Up',
+                            style: GoogleFonts.inter(fontSize: 12, color: Colors.white60),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            calendar.nextEvent!.title,
+                            style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 16, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      DateFormat('HH:mm').format(calendar.nextEvent!.startDate),
+                      style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: accent),
+                    ),
+                  ],
+                ),
+              ).animate().fadeIn(duration: 400.ms, delay: 200.ms).slideY(begin: 0.1, duration: 400.ms, curve: Curves.easeOutCubic),
+
             const SizedBox(height: 16),
 
             // Quick actions
-            _buildQuickActions(),
+            GlassCard(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Quick Actions',
+                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white70),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildActionButton(icon: Icons.bed, label: 'Sleep', onTap: () => context.read<AppState>().setActiveTab(2)),
+                      _buildActionButton(icon: Icons.check_circle_outline, label: 'Habit', onTap: () => context.read<AppState>().setActiveTab(2)),
+                      _buildActionButton(icon: Icons.edit_note, label: 'Note', onTap: () => context.read<AppState>().setActiveTab(1)),
+                      _buildActionButton(icon: Icons.event, label: 'Event', onTap: () => context.read<AppState>().setActiveTab(4)),
+                    ],
+                  ),
+                ],
+              ),
+            ).animate().fadeIn(duration: 400.ms, delay: 300.ms).slideY(begin: 0.1, duration: 400.ms, curve: Curves.easeOutCubic),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildWeatherCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Text(_weatherEmoji, style: const TextStyle(fontSize: 40)),
-            const SizedBox(width: 16),
-            Text(_temperature, style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w500)),
-            const SizedBox(width: 8),
-            const Text("Today's Forecast", style: TextStyle(color: Colors.grey)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSummaryRow(DailyProvider daily) {
-    return Row(
-      children: [
-        _SummaryRing(label: 'Lessons', value: '${daily.lessons.where((l) => l.status == 'done').length}'),
-        _SummaryRing(label: 'Sleep', value: '${daily.averageSleep.toStringAsFixed(1)}h'),
-        _SummaryRing(label: 'Habits', value: '${daily.habits.where((h) => daily.isHabitDoneToday(h.id)).length}'),
-      ].map((w) => Expanded(child: w)).toList(),
-    );
-  }
-
-  Widget _buildNextEvent(CalendarEvent event) {
-    return Card(
-      child: ListTile(
-        leading: Container(width: 4, height: 40, color: Theme.of(context).colorScheme.primary),
-        title: Text('Next Up', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-        subtitle: Text(event.title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        trailing: Text(DateFormat('HH:mm').format(event.startDate)),
-      ),
-    );
-  }
-
-  Widget _buildQuickActions() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Quick Actions', style: TextStyle(color: Colors.grey[600])),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _ActionButton(icon: Icons.bed, label: 'Sleep', onTap: () => context.read<AppState>().setActiveTab(2)),
-                _ActionButton(icon: Icons.check_circle_outline, label: 'Habit', onTap: () => context.read<AppState>().setActiveTab(2)),
-                _ActionButton(icon: Icons.edit_note, label: 'Note', onTap: () => context.read<AppState>().setActiveTab(1)),
-                _ActionButton(icon: Icons.event, label: 'Event', onTap: () => context.read<AppState>().setActiveTab(4)),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SummaryRing extends StatelessWidget {
-  final String label, value;
-  const _SummaryRing({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+  Widget _buildSummaryRing({required String label, required String value}) {
+    final accent = Theme.of(context).colorScheme.primary;
+    return GlassCard(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       child: Column(
         children: [
-          Container(
-            width: 48, height: 48,
-            decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Theme.of(context).colorScheme.primary, width: 3)),
-            child: Center(child: Text(value, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary))),
+          SizedBox(
+            width: 56, height: 56,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CircularProgressIndicator(
+                  value: 0.7,
+                  strokeWidth: 3,
+                  backgroundColor: Colors.white.withOpacity(0.1),
+                  valueColor: AlwaysStoppedAnimation<Color>(accent),
+                ),
+                Text(
+                  value,
+                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
-          Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: GoogleFonts.inter(fontSize: 11, color: Colors.white60),
+          ),
         ],
       ),
     );
   }
-}
 
-class _ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  const _ActionButton({required this.icon, required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildActionButton({required IconData icon, required String label, required VoidCallback onTap}) {
+    final accent = Theme.of(context).colorScheme.primary;
     return GestureDetector(
       onTap: onTap,
       child: Column(
         children: [
-          Container(
+          GlassCard(
+            borderRadius: 14,
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-            child: Icon(icon, color: Theme.of(context).colorScheme.primary),
+            child: Icon(icon, color: accent, size: 24),
           ),
-          const SizedBox(height: 4),
-          Text(label, style: const TextStyle(fontSize: 11)),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: GoogleFonts.inter(fontSize: 11, color: Colors.white70),
+          ),
         ],
       ),
     );

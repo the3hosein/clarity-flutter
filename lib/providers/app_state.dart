@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/storage_service.dart';
 
 class AppState extends ChangeNotifier {
   int _activeTab = 0;
   bool _sidebarCollapsed = false;
-  ThemeMode _themeMode = ThemeMode.system;
-  String _accentColorHex = '#007AFF';
+  ThemeMode _themeMode = ThemeMode.dark;
+  String _accentColorHex = '#7C5CFC';
   String _userName = 'Hossein';
-  String _avatarEmoji = '😊';
+  String _avatarEmoji = '🧠';
   double _sleepGoalHours = 8.0;
   String? _toastMessage;
   bool _showToast = false;
@@ -19,18 +20,18 @@ class AppState extends ChangeNotifier {
     final themeName = await StorageService.loadString('themeMode');
     _themeMode = ThemeMode.values.firstWhere(
       (m) => m.name == themeName,
-      orElse: () => ThemeMode.system,
+      orElse: () => ThemeMode.dark,
     );
-    _accentColorHex = await StorageService.loadString('accentColor', defaultValue: '#007AFF');
+    _accentColorHex = await StorageService.loadString('accentColor', defaultValue: '#7C5CFC');
     _userName = await StorageService.loadString('userName', defaultValue: 'Hossein');
-    _avatarEmoji = await StorageService.loadString('avatarEmoji', defaultValue: '😊');
+    _avatarEmoji = await StorageService.loadString('avatarEmoji', defaultValue: '🧠');
     _sleepGoalHours = await StorageService.loadDouble('sleepGoal', defaultValue: 8.0);
   }
 
   int get activeTab => _activeTab;
   bool get sidebarCollapsed => _sidebarCollapsed;
   ThemeMode get themeMode => _themeMode;
-  ThemeMode get effectiveThemeMode => _themeMode;
+  ThemeMode get effectiveThemeMode => ThemeMode.dark;
   String get accentColorHex => _accentColorHex;
   String get userName => _userName;
   String get avatarEmoji => _avatarEmoji;
@@ -60,57 +61,65 @@ class AppState extends ChangeNotifier {
     try {
       return Color(int.parse(_accentColorHex.replaceFirst('#', '0xFF')));
     } catch (_) {
-      return const Color(0xFF007AFF);
+      return const Color(0xFF7C5CFC);
     }
   }
 
-  ThemeData get lightTheme => ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.light,
-        colorSchemeSeed: accentColor,
-        scaffoldBackgroundColor: const Color(0xFFF2F2F7),
-        // fontFamily removed (SF Pro not bundled)
-        cardTheme: CardThemeData(
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          color: Colors.white,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
-        ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Color(0xFFF9F9F9),
-          elevation: 0,
-          selectedItemColor: Color(0xFF007AFF),
-          unselectedItemColor: Color(0xFF8E8E93),
-        ),
-      );
+  static const _scaffoldDark = Color(0xFF0A0A0F);
+  static const _surfaceDark = Color(0xFF1A1A2E);
+  static const _cardGlass = Color(0x1AFFFFFF);
 
   ThemeData get darkTheme => ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
         colorSchemeSeed: accentColor,
-        scaffoldBackgroundColor: const Color(0xFF1C1C1E),
-        // fontFamily removed (SF Pro not bundled)
+        scaffoldBackgroundColor: _scaffoldDark,
+        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
         cardTheme: CardThemeData(
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          color: const Color(0xFF2C2C2E),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: _cardGlass,
+          surfaceTintColor: Colors.transparent,
         ),
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
+          titleTextStyle: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Color(0xFF1C1C1E),
+          backgroundColor: Color(0x1AFFFFFF),
           elevation: 0,
-          selectedItemColor: Color(0xFF007AFF),
-          unselectedItemColor: Color(0xFF636366),
+          selectedItemColor: Color(0xFF7C5CFC),
+          unselectedItemColor: Color(0x99FFFFFF),
+        ),
+        dialogTheme: DialogThemeData(
+          backgroundColor: _surfaceDark,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0x0DFFFFFF),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: accentColor.withOpacity(0.5)),
+          ),
+          labelStyle: const TextStyle(color: Color(0x99FFFFFF)),
+        ),
+        dividerTheme: DividerThemeData(color: const Color(0x1AFFFFFF), thickness: 1),
+        chipTheme: ChipThemeData(
+          backgroundColor: const Color(0x1AFFFFFF),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: accentColor,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         ),
       );
+
+  ThemeData get lightTheme => darkTheme;
 
   void setActiveTab(int index) {
     _activeTab = index;
