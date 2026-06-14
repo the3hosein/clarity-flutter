@@ -160,8 +160,8 @@ class _TargetsTab extends StatelessWidget {
               const SizedBox(height: 16),
               const Text('Sub-Goals', style: TextStyle(fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
-              SizedBox(
-                maxHeight: 300,
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 300),
                 child: ListView.builder(
                   shrinkWrap: true,
                   itemCount: subC.length,

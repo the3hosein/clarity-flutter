@@ -20,8 +20,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
-        final modes = ['month', 'week', 'agenda'];
-        context.read<CalendarProvider>().setViewMode(modes[_tabController.index]);
+        context.read<CalendarProvider>().setViewMode(_tabController.index);
       }
     });
   }

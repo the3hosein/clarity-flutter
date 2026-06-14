@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
-  static Future<void> saveList<T>(String key, List<T> items, String Function(T) toJson) async {
+  static Future<void> saveList<T>(String key, List<T> items, Map<String, dynamic> Function(T) toJson) async {
     final prefs = await SharedPreferences.getInstance();
     final json = jsonEncode(items.map((e) => toJson(e)).toList());
     await prefs.setString(key, json);

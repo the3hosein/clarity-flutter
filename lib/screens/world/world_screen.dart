@@ -169,7 +169,7 @@ class _MusicTab extends StatelessWidget {
                           icon: const Icon(Icons.add, size: 20),
                           onPressed: () => _addTrack(context, pl, w),
                         ),
-                        const Icon(Icons.chevron_up),
+                        const Icon(Icons.keyboard_arrow_up),
                       ],
                     ),
                   ),
@@ -393,7 +393,7 @@ class _YouTubeTab extends StatelessWidget {
                           );
                         },
                       ),
-                      const Icon(Icons.chevron_up),
+                      const Icon(Icons.keyboard_arrow_up),
                     ],
                   ),
                 ),
