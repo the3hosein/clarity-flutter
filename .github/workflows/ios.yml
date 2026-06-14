@@ -28,7 +28,9 @@ jobs:
 
       - name: Install CocoaPods
         run: |
-          gem install cocoapods --no-document --silent
+          # Ensure CocoaPods is available
+          brew install cocoapods 2>/dev/null || sudo gem install cocoapods --no-document --silent
+          pod --version
           cd ios
           # Set minimum iOS version for compatibility
           sed -i '' "s/# platform :ios, '9.0'/platform :ios, '13.0'/" Podfile
