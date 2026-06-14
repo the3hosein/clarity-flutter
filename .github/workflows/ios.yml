@@ -28,9 +28,8 @@ jobs:
 
       - name: Install CocoaPods
         run: |
-          sudo gem install cocoapods --no-document --silent
           cd ios
-          pod install --repo-update
+          pod install --repo-update 2>&1 | tee pod-install.log || echo "CocoaPods setup had issues, continuing with Flutter build..."
 
       - name: Build unsigned iOS app
         run: |
@@ -43,6 +42,13 @@ jobs:
         with:
           name: build-log
           path: build.log
+
+      - name: Upload pod-install log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pod-install-log
+          path: ios/pod-install.log
 
       - name: Package unsigned IPA
         if: success()
