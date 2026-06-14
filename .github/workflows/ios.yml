@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-13
 
     steps:
       - uses: actions/checkout@v4
@@ -27,10 +27,7 @@ jobs:
         run: flutter pub get
 
       - name: Install CocoaPods
-        run: |
-          pod --version 2>&1 || true
-          cd ios
-          pod install --repo-update 2>&1 | tee pod-install.log || echo "CocoaPods had issues, trying Flutter build anyway..."
+        run: cd ios && pod install --repo-update
 
       - name: Build unsigned iOS app
         run: |
