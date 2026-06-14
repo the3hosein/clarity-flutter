@@ -32,12 +32,13 @@ class BookItem {
         "isbn": isbn, "coverURL": coverURL, "status": status, "currentPage": currentPage, "notes": notes,
       };
 
-  BookItem copyWith({String? status, int? currentPage}) => BookItem(
-        id: id, googleBooksID: googleBooksID, title: title, authors: authors,
-        publisher: publisher, publishedDate: publishedDate, pageCount: pageCount,
-        descriptionText: descriptionText, categories: categories, averageRating: averageRating,
-        isbn: isbn, coverURL: coverURL, status: status ?? this.status,
-        currentPage: currentPage ?? this.currentPage, notes: notes,
+  BookItem copyWith({String? id, String? googleBooksID, String? title, List<String>? authors, String? publisher, String? publishedDate, int? pageCount, String? descriptionText, List<String>? categories, double? averageRating, String? isbn, String? coverURL, String? status, int? currentPage, String? notes}) => BookItem(
+        id: id ?? this.id, googleBooksID: googleBooksID ?? this.googleBooksID, title: title ?? this.title,
+        authors: authors ?? this.authors, publisher: publisher ?? this.publisher,
+        publishedDate: publishedDate ?? this.publishedDate, pageCount: pageCount ?? this.pageCount,
+        descriptionText: descriptionText ?? this.descriptionText, categories: categories ?? this.categories,
+        averageRating: averageRating ?? this.averageRating, isbn: isbn ?? this.isbn, coverURL: coverURL ?? this.coverURL,
+        status: status ?? this.status, currentPage: currentPage ?? this.currentPage, notes: notes ?? this.notes,
       );
 
   factory BookItem.fromJson(Map<String, dynamic> j) => BookItem(

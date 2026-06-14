@@ -16,6 +16,10 @@ class MusicPlaylist {
         id: j["id"], name: j["name"], moodTag: j["moodTag"] ?? "",
         tracks: (j["tracks"] as List).map((t) => MusicTrack.fromJson(t)).toList(),
       );
+  MusicPlaylist copyWith({String? id, String? name, String? moodTag, List<MusicTrack>? tracks}) => MusicPlaylist(
+        id: id ?? this.id, name: name ?? this.name, moodTag: moodTag ?? this.moodTag,
+        tracks: tracks ?? this.tracks,
+      );
 }
 
 class MusicTrack {
@@ -45,5 +49,12 @@ class MusicTrack {
         artistName: j["artistName"] ?? "", albumName: j["albumName"] ?? "",
         artworkURL: j["artworkURL"] ?? "", previewURL: j["previewURL"] ?? "",
         trackTimeMillis: j["trackTimeMillis"] ?? 0,
+      );
+
+  MusicTrack copyWith({String? id, int? trackId, String? trackName, String? artistName, String? albumName, String? artworkURL, String? previewURL, int? trackTimeMillis}) => MusicTrack(
+        id: id ?? this.id, trackId: trackId ?? this.trackId, trackName: trackName ?? this.trackName,
+        artistName: artistName ?? this.artistName, albumName: albumName ?? this.albumName,
+        artworkURL: artworkURL ?? this.artworkURL, previewURL: previewURL ?? this.previewURL,
+        trackTimeMillis: trackTimeMillis ?? this.trackTimeMillis,
       );
 }

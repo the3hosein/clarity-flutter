@@ -362,10 +362,7 @@ class _YouTubeTab extends StatelessWidget {
                     subtitle: Text(DateFormat('d MMM').format(v.dateAdded)),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline, size: 18),
-                      onPressed: () {
-                        w.videos.removeWhere((x) => x.id == v.id);
-                        w.addVideoToFolder(folder.id, v);
-                      },
+                      onPressed: () => w.deleteVideo(v.id),
                     ),
                   )).toList(),
                   trailing: Row(

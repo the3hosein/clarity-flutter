@@ -1,3 +1,12 @@
+DateTime _tryParse(dynamic value) {
+  if (value == null) return DateTime.now();
+  try {
+    return DateTime.parse(value.toString());
+  } catch (_) {
+    return DateTime.now();
+  }
+}
+
 class Habit {
   final String id;
   String name;
@@ -17,7 +26,13 @@ class Habit {
 
   factory Habit.fromJson(Map<String, dynamic> j) => Habit(
         id: j["id"], name: j["name"],
-        completedDates: (j["completedDates"] as List).map((d) => DateTime.parse(d)).toList(),
-        createdAt: DateTime.parse(j["createdAt"]),
+        completedDates: (j["completedDates"] as List).map((d) => _tryParse(d)).toList(),
+        createdAt: _tryParse(j["createdAt"]),
+      );
+
+  Habit copyWith({String? id, String? name, List<DateTime>? completedDates, DateTime? createdAt}) => Habit(
+        id: id ?? this.id, name: name ?? this.name,
+        completedDates: completedDates ?? this.completedDates, createdAt: createdAt ?? this.createdAt,
       );
 }
+

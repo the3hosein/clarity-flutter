@@ -1,4 +1,11 @@
-import "dart:convert";
+DateTime _tryParse(dynamic value) {
+  if (value == null) return DateTime.now();
+  try {
+    return DateTime.parse(value.toString());
+  } catch (_) {
+    return DateTime.now();
+  }
+}
 
 class JournalEntry {
   final String id;
@@ -34,7 +41,14 @@ class JournalEntry {
   factory JournalEntry.fromJson(Map<String, dynamic> j) => JournalEntry(
         id: j["id"], title: j["title"], body: j["body"], mood: j["mood"],
         tags: List<String>.from(j["tags"] ?? []), isPinned: j["isPinned"] ?? false,
-        createdAt: DateTime.parse(j["createdAt"]),
-        updatedAt: DateTime.parse(j["updatedAt"]),
+        createdAt: _tryParse(j["createdAt"]),
+        updatedAt: _tryParse(j["updatedAt"]),
+      );
+
+  JournalEntry copyWith({String? id, String? title, String? body, int? mood, List<String>? tags, bool? isPinned, DateTime? createdAt, DateTime? updatedAt}) => JournalEntry(
+        id: id ?? this.id, title: title ?? this.title, body: body ?? this.body,
+        mood: mood ?? this.mood, tags: tags ?? this.tags, isPinned: isPinned ?? this.isPinned,
+        createdAt: createdAt ?? this.createdAt, updatedAt: updatedAt ?? this.updatedAt,
       );
 }
+

@@ -13,8 +13,12 @@ class StorageService {
     final prefs = await SharedPreferences.getInstance();
     final json = prefs.getString(key);
     if (json == null) return [];
-    final list = jsonDecode(json) as List;
-    return list.map((e) => fromJson(e as Map<String, dynamic>)).toList();
+    try {
+      final list = jsonDecode(json) as List;
+      return list.map((e) => fromJson(e as Map<String, dynamic>)).toList();
+    } catch (_) {
+      return [];
+    }
   }
 
   static Future<void> saveObject<T>(String key, T obj, Map<String, dynamic> Function(T) toJson) async {
@@ -26,7 +30,11 @@ class StorageService {
     final prefs = await SharedPreferences.getInstance();
     final json = prefs.getString(key);
     if (json == null) return null;
-    return fromJson(jsonDecode(json) as Map<String, dynamic>);
+    try {
+      return fromJson(jsonDecode(json) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
   }
 
   static Future<void> saveString(String key, String value) async {

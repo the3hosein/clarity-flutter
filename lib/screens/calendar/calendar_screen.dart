@@ -52,7 +52,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
         children: [
           _MonthView(cal: cal),
           _WeekView(cal: cal),
-          _AgendaView(cal: cal),
+          _AgendaView(cal: cal, onEditEvent: (e) => _showEventEditor(context, e, cal)),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -97,7 +97,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                       label: Text(DateFormat('MMM d').format(startDate)),
                       onPressed: () async {
                         final d = await showDatePicker(context: ctx, initialDate: startDate, firstDate: DateTime(2020), lastDate: DateTime(2030));
-                        if (d != null) setInner(() { startDate = d; endDate = d; });
+                        if (d != null) setInner(() { startDate = d; });
                       },
                     ),
                   ),
@@ -343,7 +343,8 @@ class _WeekView extends StatelessWidget {
 
 class _AgendaView extends StatelessWidget {
   final CalendarProvider cal;
-  const _AgendaView({required this.cal});
+  final void Function(CalendarEvent) onEditEvent;
+  const _AgendaView({required this.cal, required this.onEditEvent});
 
   @override
   Widget build(BuildContext context) {
@@ -387,114 +388,12 @@ class _AgendaView extends StatelessWidget {
                       icon: const Icon(Icons.delete_outline, size: 20),
                       onPressed: () => cal.deleteEvent(e.id),
                     ),
-                    onTap: () => _showEventEditor(context, e, cal),
+                    onTap: () => onEditEvent(e),
                   ),
                 )),
           ],
         );
       }).toList(),
-    );
-  }
-
-  void _showEventEditor(BuildContext context, CalendarEvent e, CalendarProvider cal) {
-    // Reuse same logic as parent — in production extract to a method
-    final calProv = cal;
-    final titleC = TextEditingController(text: e.title);
-    final descC = TextEditingController(text: e.notes ?? '');
-    DateTime startDate = e.startDate;
-    DateTime endDate = e.endDate;
-    TimeOfDay startTime = TimeOfDay.fromDateTime(e.startDate);
-    TimeOfDay endTime = TimeOfDay.fromDateTime(e.endDate);
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setInner) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom, left: 24, right: 24, top: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
-              const SizedBox(height: 16),
-              const Text('Edit Event', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 16),
-              TextField(controller: titleC, decoration: const InputDecoration(labelText: 'Title', border: OutlineInputBorder())),
-              const SizedBox(height: 12),
-              TextField(controller: descC, decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder())),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.calendar_today, size: 18),
-                      label: Text(DateFormat('MMM d').format(startDate)),
-                      onPressed: () async {
-                        final d = await showDatePicker(context: ctx, initialDate: startDate, firstDate: DateTime(2020), lastDate: DateTime(2030));
-                        if (d != null) setInner(() { startDate = d; endDate = d; });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.access_time, size: 18),
-                      label: Text(startTime.format(ctx)),
-                      onPressed: () async {
-                        final t = await showTimePicker(context: ctx, initialTime: startTime);
-                        if (t != null) setInner(() => startTime = t);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.calendar_today, size: 18),
-                      label: Text(DateFormat('MMM d').format(endDate)),
-                      onPressed: () async {
-                        final d = await showDatePicker(context: ctx, initialDate: endDate, firstDate: DateTime(2020), lastDate: DateTime(2030));
-                        if (d != null) setInner(() => endDate = d);
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.access_time, size: 18),
-                      label: Text(endTime.format(ctx)),
-                      onPressed: () async {
-                        final t = await showTimePicker(context: ctx, initialTime: endTime);
-                        if (t != null) setInner(() => endTime = t);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () {
-                  calProv.saveEvent(CalendarEvent(
-                    id: e.id,
-                    title: titleC.text,
-                    notes: descC.text,
-                    startDate: DateTime(startDate.year, startDate.month, startDate.day, startTime.hour, startTime.minute),
-                    endDate: DateTime(endDate.year, endDate.month, endDate.day, endTime.hour, endTime.minute),
-                  ));
-                  Navigator.pop(ctx);
-                },
-                child: const Text('Save'),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

@@ -27,11 +27,12 @@ class MovieItem {
         "status": status, "userRating": userRating,
       };
 
-  MovieItem copyWith({String? status, int? userRating}) => MovieItem(
-        id: id, imdbID: imdbID, title: title, year: year, posterURL: posterURL,
-        genre: genre, plot: plot, imdbRating: imdbRating, director: director,
-        cast: cast, runtime: runtime, rated: rated, awards: awards,
-        status: status ?? this.status, userRating: userRating ?? this.userRating,
+  MovieItem copyWith({String? id, String? imdbID, String? title, String? year, String? posterURL, String? genre, String? plot, String? imdbRating, String? director, List<String>? cast, String? runtime, String? rated, String? awards, String? status, int? userRating}) => MovieItem(
+        id: id ?? this.id, imdbID: imdbID ?? this.imdbID, title: title ?? this.title,
+        year: year ?? this.year, posterURL: posterURL ?? this.posterURL, genre: genre ?? this.genre,
+        plot: plot ?? this.plot, imdbRating: imdbRating ?? this.imdbRating, director: director ?? this.director,
+        cast: cast ?? this.cast, runtime: runtime ?? this.runtime, rated: rated ?? this.rated,
+        awards: awards ?? this.awards, status: status ?? this.status, userRating: userRating ?? this.userRating,
       );
 
   factory MovieItem.fromJson(Map<String, dynamic> j) => MovieItem(

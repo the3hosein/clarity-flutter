@@ -1,3 +1,12 @@
+DateTime _tryParse(dynamic value) {
+  if (value == null) return DateTime.now();
+  try {
+    return DateTime.parse(value.toString());
+  } catch (_) {
+    return DateTime.now();
+  }
+}
+
 class Target {
   final String id;
   String title;
@@ -30,7 +39,12 @@ class Target {
         subGoals: (json['subGoals'] as List)
             .map((g) => SubGoal.fromJson(g))
             .toList(),
-        createdAt: DateTime.parse(json['createdAt']),
+        createdAt: _tryParse(json['createdAt']),
+      );
+
+  Target copyWith({String? id, String? title, String? quote, List<SubGoal>? subGoals, DateTime? createdAt}) => Target(
+        id: id ?? this.id, title: title ?? this.title, quote: quote ?? this.quote,
+        subGoals: subGoals ?? this.subGoals, createdAt: createdAt ?? this.createdAt,
       );
 }
 

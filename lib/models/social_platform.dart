@@ -22,4 +22,11 @@ class SocialPlatform {
         todayMinutes: (j["todayMinutes"] ?? 0).toDouble(),
         weeklyLog: Map<String, double>.from(j["weeklyLog"] ?? {}),
       );
+
+  SocialPlatform copyWith({String? id, String? name, String? iconName, double? dailyLimitMinutes, double? todayMinutes, Map<String, double>? weeklyLog}) => SocialPlatform(
+        id: id ?? this.id, name: name ?? this.name, iconName: iconName ?? this.iconName,
+        dailyLimitMinutes: dailyLimitMinutes ?? this.dailyLimitMinutes, todayMinutes: todayMinutes ?? this.todayMinutes,
+        weeklyLog: weeklyLog ?? this.weeklyLog,
+      );
 }
+

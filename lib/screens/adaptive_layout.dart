@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:math';
 import '../providers/app_state.dart';
 import '../providers/mind_provider.dart';
 import '../providers/daily_provider.dart';
@@ -80,6 +79,9 @@ class _AdaptiveLayoutScreenState extends State<AdaptiveLayoutScreen> {
   }
 
   Widget _buildContent(AppState appState) {
+    if (appState.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
     switch (appState.activeTab) {
       case 0: return const DashboardScreen();
       case 1: return const MindScreen();
@@ -206,7 +208,7 @@ class _BottomTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final tabs = appState.tabs.take(5).toList();
+    final tabs = appState.tabs.toList();
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
@@ -228,7 +230,7 @@ class _BottomTabBar extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            activeTab == tab.index ? tab.icon : tab.icon,
+                            tab.icon,
                             size: 24,
                             color: activeTab == tab.index
                                 ? Theme.of(context).colorScheme.primary

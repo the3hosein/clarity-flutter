@@ -121,8 +121,14 @@ class WorldProvider extends ChangeNotifier {
   }
 
   Future<void> addVideoToFolder(String folderId, YouTubeVideo video) async {
-    video.folderId = folderId;
-    _videos.add(video);
+    final copy = video.copyWith(folderId: folderId);
+    _videos.add(copy);
+    await _saveVideos();
+    notifyListeners();
+  }
+
+  Future<void> deleteVideo(String id) async {
+    _videos.removeWhere((v) => v.id == id);
     await _saveVideos();
     notifyListeners();
   }

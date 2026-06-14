@@ -190,7 +190,11 @@ class _TargetsTab extends StatelessWidget {
                   final target = Target(
                     id: existing?.id,
                     title: titleC.text,
-                    subGoals: List.generate(subC.length, (i) => SubGoal(id: existing?.subGoals[i].id, title: subC[i].text, progress: prog[i])),
+                    subGoals: List.generate(subC.length, (i) => SubGoal(
+  id: existing != null && i < existing.subGoals.length ? existing.subGoals[i].id : null,
+  title: subC[i].text,
+  progress: prog[i]
+)),
                   );
                   mind.saveTarget(target);
                   Navigator.pop(ctx);

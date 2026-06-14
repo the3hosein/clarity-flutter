@@ -62,8 +62,9 @@ class MindProvider extends ChangeNotifier {
   }
 
   Future<void> addMessage(String channelId, ChannelMessage message) async {
-    final channel = _channels.firstWhere((c) => c.id == channelId);
-    channel.messages.add(message);
+    final channels = _channels.where((c) => c.id == channelId).toList();
+    if (channels.isEmpty) return;
+    channels.first.messages.add(message);
     await StorageService.saveList('channels', _channels, (c) => c.toJson());
     notifyListeners();
   }

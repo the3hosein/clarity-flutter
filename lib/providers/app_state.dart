@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../services/storage_service.dart';
 
 class AppState extends ChangeNotifier {
@@ -12,7 +12,20 @@ class AppState extends ChangeNotifier {
   double _sleepGoalHours = 8.0;
   String? _toastMessage;
   bool _showToast = false;
+  Timer? _toastTimer;
   bool _isLoading = false;
+
+  Future<void> load() async {
+    final themeName = await StorageService.loadString('themeMode');
+    _themeMode = ThemeMode.values.firstWhere(
+      (m) => m.name == themeName,
+      orElse: () => ThemeMode.system,
+    );
+    _accentColorHex = await StorageService.loadString('accentColor', defaultValue: '#007AFF');
+    _userName = await StorageService.loadString('userName', defaultValue: 'Hossein');
+    _avatarEmoji = await StorageService.loadString('avatarEmoji', defaultValue: '😊');
+    _sleepGoalHours = await StorageService.loadDouble('sleepGoal', defaultValue: 8.0);
+  }
 
   int get activeTab => _activeTab;
   bool get sidebarCollapsed => _sidebarCollapsed;
@@ -43,7 +56,13 @@ class AppState extends ChangeNotifier {
     return 'Good night';
   }
 
-  Color get accentColor => Color(int.parse(_accentColorHex.replaceFirst('#', '0xFF')));
+  Color get accentColor {
+    try {
+      return Color(int.parse(_accentColorHex.replaceFirst('#', '0xFF')));
+    } catch (_) {
+      return const Color(0xFF007AFF);
+    }
+  }
 
   ThemeData get lightTheme => ThemeData(
         useMaterial3: true,
@@ -134,10 +153,11 @@ class AppState extends ChangeNotifier {
   }
 
   void showSuccess(String message) {
+    _toastTimer?.cancel();
     _toastMessage = message;
     _showToast = true;
     notifyListeners();
-    Future.delayed(const Duration(seconds: 2), () {
+    _toastTimer = Timer(const Duration(seconds: 2), () {
       _showToast = false;
       notifyListeners();
     });

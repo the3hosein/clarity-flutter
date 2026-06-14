@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import '../../providers/daily_provider.dart';
 import '../../models/lesson.dart';
 import '../../models/sleep_log.dart';
@@ -77,7 +76,7 @@ class _LessonsTab extends StatelessWidget {
                 final l = lessons[i];
                 return Card(
                   child: ListTile(
-                    leading: CircleAvatar(child: Text(l.subject[0])),
+                    leading: CircleAvatar(child: Text(l.subject.isNotEmpty ? l.subject[0] : '?')),
                     title: Text(l.subject),
                     subtitle: Text(l.status),
                     trailing: Row(
@@ -111,20 +110,48 @@ class _LessonsTab extends StatelessWidget {
 
   void _addLesson(BuildContext context, DailyProvider d) {
     final c = TextEditingController();
+    int selectedDay = DateTime.now().weekday;
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('New Lesson'),
-        content: TextField(controller: c, decoration: const InputDecoration(labelText: 'Lesson subject')),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () {
-            if (c.text.isNotEmpty) {
-              d.addLesson(Lesson(subject: c.text));
-              Navigator.pop(ctx);
-            }
-          }, child: const Text('Add')),
-        ],
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setInner) => AlertDialog(
+          title: const Text('New Lesson'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(controller: c, decoration: const InputDecoration(labelText: 'Lesson subject')),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<int>(
+                value: selectedDay,
+                decoration: const InputDecoration(labelText: 'Day of Week'),
+                items: const [
+                  DropdownMenuItem(value: 1, child: Text('Monday')),
+                  DropdownMenuItem(value: 2, child: Text('Tuesday')),
+                  DropdownMenuItem(value: 3, child: Text('Wednesday')),
+                  DropdownMenuItem(value: 4, child: Text('Thursday')),
+                  DropdownMenuItem(value: 5, child: Text('Friday')),
+                  DropdownMenuItem(value: 6, child: Text('Saturday')),
+                  DropdownMenuItem(value: 7, child: Text('Sunday')),
+                ],
+                onChanged: (v) {
+                  if (v != null) {
+                    selectedDay = v;
+                    setInner(() {});
+                  }
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            FilledButton(onPressed: () {
+              if (c.text.isNotEmpty) {
+                d.addLesson(Lesson(subject: c.text, dayOfWeek: selectedDay));
+                Navigator.pop(ctx);
+              }
+            }, child: const Text('Add')),
+          ],
+        ),
       ),
     );
   }
@@ -172,8 +199,8 @@ class _SleepTab extends StatelessWidget {
 
   void _logSleep(BuildContext context, DailyProvider d) {
     final now = DateTime.now();
-    final bedtime = DateTime(now.year, now.month, now.day, 23, 0);
-    final wakeTime = DateTime(now.year, now.month, now.day, 7, 0);
+    TimeOfDay bedtime = const TimeOfDay(hour: 23, minute: 0);
+    TimeOfDay wakeTime = const TimeOfDay(hour: 7, minute: 0);
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
@@ -187,10 +214,31 @@ class _SleepTab extends StatelessWidget {
               const SizedBox(height: 16),
               const Text('Log Sleep', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               const SizedBox(height: 16),
-              Text('${wakeTime.difference(bedtime).inHours}h', style: const TextStyle(fontSize: 32)),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.bedtime, size: 18),
+                label: Text('Bedtime: ${bedtime.format(ctx)}'),
+                onPressed: () async {
+                  final t = await showTimePicker(context: ctx, initialTime: bedtime);
+                  if (t != null) setInner(() => bedtime = t);
+                },
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.wb_sunny, size: 18),
+                label: Text('Wake: ${wakeTime.format(ctx)}'),
+                onPressed: () async {
+                  final t = await showTimePicker(context: ctx, initialTime: wakeTime);
+                  if (t != null) setInner(() => wakeTime = t);
+                },
+              ),
+              const SizedBox(height: 16),
+              Text(_sleepDuration(bedtime, wakeTime), style: const TextStyle(fontSize: 32)),
               FilledButton(
                 onPressed: () {
-                  d.addSleepLog(SleepLog(date: DateTime(now.year, now.month, now.day), bedtime: bedtime, wakeTime: wakeTime));
+                  final bedDT = DateTime(now.year, now.month, now.day, bedtime.hour, bedtime.minute);
+                  var wakeDT = DateTime(now.year, now.month, now.day, wakeTime.hour, wakeTime.minute);
+                  if (wakeDT.isBefore(bedDT)) wakeDT = wakeDT.add(const Duration(days: 1));
+                  d.addSleepLog(SleepLog(date: DateTime(now.year, now.month, now.day), bedtime: bedDT, wakeTime: wakeDT));
                   Navigator.pop(ctx);
                 },
                 child: const Text('Log'),
@@ -200,6 +248,13 @@ class _SleepTab extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _sleepDuration(TimeOfDay bed, TimeOfDay wake) {
+    final bedMin = bed.hour * 60 + bed.minute;
+    final wakeMin = wake.hour * 60 + wake.minute;
+    final diff = wakeMin >= bedMin ? wakeMin - bedMin : (wakeMin + 1440) - bedMin;
+    return '${(diff / 60).toStringAsFixed(1)}h';
   }
 }
 

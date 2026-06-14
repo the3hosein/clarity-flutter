@@ -25,7 +25,7 @@ class DailyProvider extends ChangeNotifier {
   }
 
   List<Lesson> get todayLessons {
-    final today = DateTime.now().weekday % 7;
+    final today = DateTime.now().weekday;
     return _lessons.where((l) => l.dayOfWeek == today).toList();
   }
 
@@ -127,7 +127,9 @@ class DailyProvider extends ChangeNotifier {
   }
 
   Future<void> toggleHabit(String id) async {
-    final habit = _habits.firstWhere((h) => h.id == id);
+    final habits = _habits.where((h) => h.id == id).toList();
+    if (habits.isEmpty) return;
+    final habit = habits.first;
     final today = DateTime.now();
     final existing = habit.completedDates.indexWhere((d) => isSameDay(d, today));
     if (existing >= 0) {
@@ -144,8 +146,9 @@ class DailyProvider extends ChangeNotifier {
   }
 
   bool isHabitDoneToday(String id) {
-    final habit = _habits.firstWhere((h) => h.id == id);
-    return habit.completedDates.any((d) => isSameDay(d, DateTime.now()));
+    final habits = _habits.where((h) => h.id == id).toList();
+    if (habits.isEmpty) return false;
+    return habits.first.completedDates.any((d) => isSameDay(d, DateTime.now()));
   }
 
   bool isSameDay(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;

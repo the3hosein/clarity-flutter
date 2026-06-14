@@ -20,4 +20,11 @@ class Lesson {
         startTime: j["startTime"], endTime: j["endTime"],
         colorHex: j["colorHex"] ?? "#007AFF", status: j["status"] ?? "pending",
       );
+
+  Lesson copyWith({String? id, String? subject, int? dayOfWeek, String? startTime, String? endTime, String? colorHex, String? status}) => Lesson(
+        id: id ?? this.id, subject: subject ?? this.subject, dayOfWeek: dayOfWeek ?? this.dayOfWeek,
+        startTime: startTime ?? this.startTime, endTime: endTime ?? this.endTime,
+        colorHex: colorHex ?? this.colorHex, status: status ?? this.status,
+      );
 }
+

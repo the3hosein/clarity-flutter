@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../../providers/app_state.dart';
 import '../../providers/daily_provider.dart';
 import '../../providers/calendar_provider.dart';
@@ -46,6 +47,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final calendar = context.watch<CalendarProvider>();
     final now = DateTime.now();
     final formatter = DateFormat('EEEE, MMMM d');
+
+    if (appState.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Home'), centerTitle: true),
@@ -131,10 +136,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _ActionButton(icon: Icons.bed, label: 'Sleep'),
-                _ActionButton(icon: Icons.check_circle_outline, label: 'Habit'),
-                _ActionButton(icon: Icons.edit_note, label: 'Note'),
-                _ActionButton(icon: Icons.event, label: 'Event'),
+                _ActionButton(icon: Icons.bed, label: 'Sleep', onTap: () => context.read<AppState>().setActiveTab(2)),
+                _ActionButton(icon: Icons.check_circle_outline, label: 'Habit', onTap: () => context.read<AppState>().setActiveTab(2)),
+                _ActionButton(icon: Icons.edit_note, label: 'Note', onTap: () => context.read<AppState>().setActiveTab(1)),
+                _ActionButton(icon: Icons.event, label: 'Event', onTap: () => context.read<AppState>().setActiveTab(4)),
               ],
             ),
           ],
@@ -170,12 +175,13 @@ class _SummaryRing extends StatelessWidget {
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
-  const _ActionButton({required this.icon, required this.label});
+  final VoidCallback onTap;
+  const _ActionButton({required this.icon, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Column(
         children: [
           Container(

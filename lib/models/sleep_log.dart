@@ -1,3 +1,12 @@
+DateTime _tryParse(dynamic value) {
+  if (value == null) return DateTime.now();
+  try {
+    return DateTime.parse(value.toString());
+  } catch (_) {
+    return DateTime.now();
+  }
+}
+
 class SleepLog {
   final String id;
   DateTime date;
@@ -20,8 +29,14 @@ class SleepLog {
       };
 
   factory SleepLog.fromJson(Map<String, dynamic> j) => SleepLog(
-        id: j["id"], date: DateTime.parse(j["date"]),
-        bedtime: DateTime.parse(j["bedtime"]), wakeTime: DateTime.parse(j["wakeTime"]),
+        id: j["id"], date: _tryParse(j["date"]),
+        bedtime: _tryParse(j["bedtime"]), wakeTime: _tryParse(j["wakeTime"]),
         quality: j["quality"] ?? 3, note: j["note"] ?? "",
       );
+
+  SleepLog copyWith({String? id, DateTime? date, DateTime? bedtime, DateTime? wakeTime, int? quality, String? note}) => SleepLog(
+        id: id ?? this.id, date: date ?? this.date, bedtime: bedtime ?? this.bedtime,
+        wakeTime: wakeTime ?? this.wakeTime, quality: quality ?? this.quality, note: note ?? this.note,
+      );
 }
+

@@ -1,3 +1,12 @@
+DateTime _tryParse(dynamic value) {
+  if (value == null) return DateTime.now();
+  try {
+    return DateTime.parse(value.toString());
+  } catch (_) {
+    return DateTime.now();
+  }
+}
+
 class CalendarEvent {
   final String id;
   String title;
@@ -22,9 +31,16 @@ class CalendarEvent {
 
   factory CalendarEvent.fromJson(Map<String, dynamic> j) => CalendarEvent(
         id: j["id"], title: j["title"] ?? "",
-        startDate: DateTime.parse(j["startDate"]),
-        endDate: DateTime.parse(j["endDate"]),
+        startDate: _tryParse(j["startDate"]),
+        endDate: _tryParse(j["endDate"]),
         category: j["category"] ?? "study", notes: j["notes"] ?? "",
         repeatOption: j["repeatOption"] ?? "none", colorHex: j["colorHex"] ?? "#007AFF",
       );
+
+  CalendarEvent copyWith({String? id, String? title, DateTime? startDate, DateTime? endDate, String? category, String? notes, String? repeatOption, String? colorHex}) => CalendarEvent(
+        id: id ?? this.id, title: title ?? this.title, startDate: startDate ?? this.startDate,
+        endDate: endDate ?? this.endDate, category: category ?? this.category, notes: notes ?? this.notes,
+        repeatOption: repeatOption ?? this.repeatOption, colorHex: colorHex ?? this.colorHex,
+      );
 }
+
