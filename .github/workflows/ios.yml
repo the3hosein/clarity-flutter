@@ -1,0 +1,40 @@
+name: Build IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: Generate iOS platform files
+        run: |
+          flutter create --project-name clarity /tmp/plat_gen
+          cp -R /tmp/plat_gen/ios .
+          cp -R /tmp/plat_gen/android .
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build unsigned iOS app
+        run: flutter build ios --release --no-codesign
+
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -r clarity-unsigned.ipa Payload/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Clarity-iOS-IPA
+          path: clarity-unsigned.ipa
