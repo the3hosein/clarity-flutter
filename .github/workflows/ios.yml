@@ -26,6 +26,19 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Diagnostic info
+        run: |
+          echo "=== Flutter version ==="
+          flutter --version
+          echo "=== Xcode version ==="
+          xcodebuild -version 2>/dev/null || echo "Xcode not found"
+          echo "=== macOS version ==="
+          sw_vers -productVersion 2>/dev/null || echo "sw_vers not available"
+          echo "=== CocoaPods version ==="
+          pod --version 2>/dev/null || echo "pod not found"
+          echo "=== Dart SDK ==="
+          dart --version 2>/dev/null
+
       - name: Run analysis
         run: flutter analyze 2>&1 | tee analysis.log
 
@@ -38,8 +51,9 @@ jobs:
         run: |
           flutter build ios --release --no-codesign 2>&1 | tee build.log
           EXITCODE=${PIPESTATUS[0]}
-          echo "=== LAST 50 LINES OF BUILD LOG ==="
+          echo "=== BUILD LOG (last 50 lines) ==="
           tail -50 build.log
+          echo "=== BUILD LOG END ==="
           exit $EXITCODE
 
       - name: Upload logs on failure
