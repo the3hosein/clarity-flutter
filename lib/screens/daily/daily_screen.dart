@@ -336,6 +336,7 @@ class _SocialTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
+    return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
       body: daily.socialPlatforms.isEmpty
           ? EmptyState(
@@ -436,6 +437,7 @@ class _HabitsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
+    return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
       body: ListView(
         padding: const EdgeInsets.all(16),
