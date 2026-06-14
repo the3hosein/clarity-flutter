@@ -34,6 +34,7 @@ class _WorldScreenState extends State<WorldScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
       appBar: AppBar(
@@ -53,7 +54,7 @@ class _WorldScreenState extends State<WorldScreen> with SingleTickerProviderStat
               controller: _tabController,
               isScrollable: true,
               indicator: BoxDecoration(
-                color: const Color(0xFF7C5CFC),
+                color: accent,
                 borderRadius: BorderRadius.circular(14),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
@@ -88,6 +89,7 @@ class _MoviesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = context.watch<WorldProvider>();
+    final accent = Theme.of(context).colorScheme.primary;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
       body: w.movies.isEmpty
@@ -109,7 +111,7 @@ class _MoviesTab extends StatelessWidget {
                   child: Row(
                     children: [
                       m.posterURL.isNotEmpty
-                          ? ClipRRect(borderRadius: BorderRadius.circular(6), child: Image.network(m.posterURL, width: 44, fit: BoxFit.cover))
+                          ? ClipRRect(borderRadius: BorderRadius.circular(6), child: Image.network(m.posterURL, width: 44, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.movie_outlined, size: 44, color: Colors.white54)))
                           : const Icon(Icons.movie_outlined, size: 44, color: Colors.white54),
                       const SizedBox(width: 12),
                       Expanded(
@@ -145,7 +147,7 @@ class _MoviesTab extends StatelessWidget {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF7C5CFC),
+        backgroundColor: accent,
         child: const Icon(Icons.add, color: Colors.white),
         onPressed: () => _addMovie(context, w),
       ),
@@ -189,6 +191,7 @@ class _MusicTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = context.watch<WorldProvider>();
+    final accent = Theme.of(context).colorScheme.primary;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
       body: w.playlists.isEmpty
@@ -228,23 +231,17 @@ class _MusicTab extends StatelessWidget {
                         },
                       ),
                     )).toList(),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.add, size: 20),
-                          color: const Color(0xFF7C5CFC),
-                          onPressed: () => _addTrack(context, pl, w),
-                        ),
-                        const Icon(Icons.keyboard_arrow_up, color: Colors.white54),
-                      ],
+                    trailing: IconButton(
+                      icon: const Icon(Icons.add, size: 20),
+                      color: accent,
+                      onPressed: () => _addTrack(context, pl, w),
                     ),
                   ),
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF7C5CFC),
+        backgroundColor: accent,
         child: const Icon(Icons.add, color: Colors.white),
         onPressed: () => _addPlaylist(context, w),
       ),
@@ -336,6 +333,7 @@ class _BooksTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = context.watch<WorldProvider>();
+    final accent = Theme.of(context).colorScheme.primary;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
       body: w.books.isEmpty
@@ -357,7 +355,7 @@ class _BooksTab extends StatelessWidget {
                   child: Row(
                     children: [
                       b.coverURL.isNotEmpty
-                          ? ClipRRect(borderRadius: BorderRadius.circular(4), child: Image.network(b.coverURL, width: 36, fit: BoxFit.cover))
+                          ? ClipRRect(borderRadius: BorderRadius.circular(4), child: Image.network(b.coverURL, width: 36, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.book_outlined, size: 36, color: Colors.white54)))
                           : const Icon(Icons.book_outlined, size: 36, color: Colors.white54),
                       const SizedBox(width: 12),
                       Expanded(
@@ -397,7 +395,7 @@ class _BooksTab extends StatelessWidget {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF7C5CFC),
+        backgroundColor: accent,
         child: const Icon(Icons.add, color: Colors.white),
         onPressed: () => _addBook(context, w),
       ),
@@ -441,6 +439,7 @@ class _YouTubeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = context.watch<WorldProvider>();
+    final accent = Theme.of(context).colorScheme.primary;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
       body: ListView(
@@ -451,7 +450,7 @@ class _YouTubeTab extends StatelessWidget {
               Text('Folders', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
               const Spacer(),
               IconButton(
-                icon: const Icon(Icons.create_new_folder_outlined, color: Color(0xFF7C5CFC)),
+                icon: Icon(Icons.create_new_folder_outlined, color: accent),
                 onPressed: () {
                   final c = TextEditingController();
                   showDialog(
@@ -547,44 +546,38 @@ class _YouTubeTab extends StatelessWidget {
                       onPressed: () => w.deleteVideo(v.id),
                     ),
                   )).toList(),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.add, size: 20),
-                        color: const Color(0xFF7C5CFC),
-                        onPressed: () {
+                  trailing: IconButton(
+                    icon: const Icon(Icons.add, size: 20),
+                      color: accent,
+                      onPressed: () {
                           final urlC = TextEditingController();
-                          showDialog(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              backgroundColor: const Color(0xFF0A0A0F),
-                              title: Text('Add Video', style: GoogleFonts.inter(color: Colors.white)),
-                              content: TextField(
-                                controller: urlC,
-                                style: GoogleFonts.inter(color: Colors.white),
-                                decoration: InputDecoration(
-                                  labelText: 'YouTube URL',
-                                  labelStyle: GoogleFonts.inter(color: Colors.white54),
-                                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
-                                  focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
-                                ),
-                              ),
-                              actions: [
-                                TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel', style: GoogleFonts.inter(color: Colors.white54))),
-                                FilledButton(onPressed: () {
-                                  if (urlC.text.isNotEmpty) {
-                                    w.addVideoToFolder(folder.id, YouTubeVideo(url: urlC.text));
-                                    Navigator.pop(ctx);
-                                  }
-                                }, child: Text('Add', style: GoogleFonts.inter())),
-                              ],
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: const Color(0xFF0A0A0F),
+                          title: Text('Add Video', style: GoogleFonts.inter(color: Colors.white)),
+                          content: TextField(
+                            controller: urlC,
+                            style: GoogleFonts.inter(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'YouTube URL',
+                              labelStyle: GoogleFonts.inter(color: Colors.white54),
+                              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                              focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
                             ),
-                          );
-                        },
-                      ),
-                      const Icon(Icons.keyboard_arrow_up, color: Colors.white54),
-                    ],
+                          ),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel', style: GoogleFonts.inter(color: Colors.white54))),
+                            FilledButton(onPressed: () {
+                              if (urlC.text.isNotEmpty) {
+                                w.addVideoToFolder(folder.id, YouTubeVideo(url: urlC.text));
+                                Navigator.pop(ctx);
+                              }
+                            }, child: Text('Add', style: GoogleFonts.inter())),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
               );

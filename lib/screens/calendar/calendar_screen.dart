@@ -37,6 +37,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     final cal = context.watch<CalendarProvider>();
+    final accent = Theme.of(context).colorScheme.primary;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
       appBar: AppBar(
@@ -55,7 +56,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
-                color: const Color(0xFF7C5CFC),
+                color: accent,
                 borderRadius: BorderRadius.circular(14),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
@@ -79,7 +80,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF7C5CFC),
+        backgroundColor: accent,
         child: const Icon(Icons.add, color: Colors.white),
         onPressed: () => _showEventEditor(context, null, cal),
       ),
@@ -87,6 +88,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
   }
 
   void _showEventEditor(BuildContext context, CalendarEvent? existing, CalendarProvider cal) {
+    final accent = Theme.of(context).colorScheme.primary;
     final titleC = TextEditingController(text: existing?.title ?? '');
     final descC = TextEditingController(text: existing?.notes ?? '');
     DateTime startDate = existing?.startDate ?? DateTime.now();
@@ -117,7 +119,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                   labelText: 'Title',
                   labelStyle: GoogleFonts.inter(color: Colors.white54),
                   enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
-                  focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: accent)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -128,7 +130,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                   labelText: 'Description',
                   labelStyle: GoogleFonts.inter(color: Colors.white54),
                   enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
-                  focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: accent)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -197,7 +199,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
               ),
               const SizedBox(height: 16),
               FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: const Color(0xFF7C5CFC)),
+                style: FilledButton.styleFrom(backgroundColor: accent),
                 onPressed: () {
                   final event = CalendarEvent(
                     id: existing?.id,
@@ -226,6 +228,7 @@ class _MonthView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
     final firstDay = DateTime(cal.selectedDate.year, cal.selectedDate.month, 1);
     final lastDay = DateTime(cal.selectedDate.year, cal.selectedDate.month + 1, 0);
     final startWeekday = firstDay.weekday % 7;
@@ -272,7 +275,7 @@ class _MonthView extends StatelessWidget {
                 onTap: () => cal.setSelectedDate(d),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFF7C5CFC) : const Color(0x1AFFFFFF),
+                    color: isSelected ? accent : const Color(0x1AFFFFFF),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.white.withOpacity(0.08)),
                   ),
@@ -282,7 +285,7 @@ class _MonthView extends StatelessWidget {
                       Text(
                         '${d.day}',
                         style: GoogleFonts.inter(
-                          color: isSelected ? Colors.white : (isToday ? const Color(0xFF7C5CFC) : Colors.white),
+                          color: isSelected ? Colors.white : (isToday ? accent : Colors.white),
                           fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
                           fontSize: 13,
                         ),
@@ -290,7 +293,7 @@ class _MonthView extends StatelessWidget {
                       if (hasEvent)
                         Container(
                           width: 5, height: 5,
-                          decoration: const BoxDecoration(color: Color(0xFF7C5CFC), shape: BoxShape.circle),
+                          decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
                         ),
                     ],
                   ),
@@ -308,7 +311,7 @@ class _MonthView extends StatelessWidget {
               const Spacer(),
               TextButton(
                 onPressed: () => cal.setSelectedDate(DateTime.now()),
-                child: Text('Today', style: GoogleFonts.inter(color: const Color(0xFF7C5CFC))),
+                child: Text('Today', style: GoogleFonts.inter(color: accent)),
               ),
             ],
           ),
@@ -328,8 +331,8 @@ class _MonthView extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       child: Row(
                         children: [
-                          Container(width: 4, height: 40, decoration: BoxDecoration(color: const Color(0xFF7C5CFC), borderRadius: BorderRadius.circular(2))),
-                          const SizedBox(width: 12),
+                            Container(width: 4, height: 40, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
+                            const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,7 +365,8 @@ class _WeekView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final weekStart = cal.selectedDate.subtract(Duration(days: cal.selectedDate.weekday - 1));
+    final accent = Theme.of(context).colorScheme.primary;
+    final weekStart = cal.selectedDate.subtract(Duration(days: cal.selectedDate.weekday % 7));
     final weekDays = List.generate(7, (i) => weekStart.add(Duration(days: i)));
 
     return Scaffold(
@@ -381,7 +385,7 @@ class _WeekView extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
-                        color: isSelected ? const Color(0xFF7C5CFC) : const Color(0x1AFFFFFF),
+                        color: isSelected ? accent : const Color(0x1AFFFFFF),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.white.withOpacity(0.08)),
                       ),
@@ -415,7 +419,7 @@ class _WeekView extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         child: Row(
                           children: [
-                            Container(width: 4, height: 40, decoration: BoxDecoration(color: const Color(0xFF7C5CFC), borderRadius: BorderRadius.circular(2))),
+                          Container(width: 4, height: 40, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
@@ -453,6 +457,7 @@ class _AgendaView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
     final sorted = List<CalendarEvent>.from(cal.events)..sort((a, b) => a.startDate.compareTo(b.startDate));
     if (sorted.isEmpty) {
       return const EmptyState(
@@ -485,7 +490,7 @@ class _AgendaView extends StatelessWidget {
                   onTap: () => onEditEvent(e),
                   child: Row(
                     children: [
-                      Container(width: 4, height: 40, decoration: BoxDecoration(color: const Color(0xFF7C5CFC), borderRadius: BorderRadius.circular(2))),
+                      Container(width: 4, height: 40, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(

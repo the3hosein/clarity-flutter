@@ -31,7 +31,7 @@ class AppState extends ChangeNotifier {
   int get activeTab => _activeTab;
   bool get sidebarCollapsed => _sidebarCollapsed;
   ThemeMode get themeMode => _themeMode;
-  ThemeMode get effectiveThemeMode => ThemeMode.dark;
+  ThemeMode get effectiveThemeMode => _themeMode;
   String get accentColorHex => _accentColorHex;
   String get userName => _userName;
   String get avatarEmoji => _avatarEmoji;
@@ -119,7 +119,55 @@ class AppState extends ChangeNotifier {
         ),
       );
 
-  ThemeData get lightTheme => darkTheme;
+  ThemeData get lightTheme => ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorSchemeSeed: accentColor,
+        scaffoldBackgroundColor: const Color(0xFFF0F0F5),
+        textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
+        cardTheme: CardThemeData(
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: const Color(0x0A000000),
+          surfaceTintColor: Colors.transparent,
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          titleTextStyle: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black87),
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Color(0x0A000000),
+          elevation: 0,
+          selectedItemColor: Color(0xFF7C5CFC),
+          unselectedItemColor: Color(0x99000000),
+        ),
+        dialogTheme: DialogThemeData(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0x0A000000),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: accentColor.withOpacity(0.5)),
+          ),
+          labelStyle: const TextStyle(color: Color(0x99000000)),
+        ),
+        dividerTheme: const DividerThemeData(color: Color(0x0A000000), thickness: 1),
+        chipTheme: ChipThemeData(
+          backgroundColor: const Color(0x0A000000),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: accentColor,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        ),
+      );
 
   void setActiveTab(int index) {
     _activeTab = index;
@@ -170,6 +218,12 @@ class AppState extends ChangeNotifier {
       _showToast = false;
       notifyListeners();
     });
+  }
+
+  void dismissToast() {
+    _showToast = false;
+    _toastTimer?.cancel();
+    notifyListeners();
   }
 
   void setLoading(bool loading) {

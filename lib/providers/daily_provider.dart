@@ -29,8 +29,8 @@ class DailyProvider extends ChangeNotifier {
     return _lessons.where((l) => l.dayOfWeek == today).toList();
   }
 
-  int get doneToday => _lessons.where((l) => l.status == 'done').length;
-  double get weeklyProgress => _lessons.isEmpty ? 0 : doneToday / _lessons.length;
+  int get doneToday => todayLessons.where((l) => l.status == 'done').length;
+  double get weeklyProgress => todayLessons.isEmpty ? 0 : doneToday / todayLessons.length;
 
   Future<void> addLesson(Lesson lesson) async {
     _lessons.add(lesson);

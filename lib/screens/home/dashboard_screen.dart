@@ -217,7 +217,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               alignment: Alignment.center,
               children: [
                 CircularProgressIndicator(
-                  value: 0.7,
+                  value: label == 'Lessons'
+                      ? (daily.todayLessons.isEmpty ? 0 : daily.doneToday / daily.todayLessons.length)
+                      : label == 'Habits'
+                          ? (daily.habits.isEmpty ? 0 : daily.habits.where((h) => daily.isHabitDoneToday(h.id)).length / daily.habits.length)
+                          : (daily.averageSleep / 12).clamp(0, 1),
                   strokeWidth: 3,
                   backgroundColor: Colors.white.withOpacity(0.1),
                   valueColor: AlwaysStoppedAnimation<Color>(accent),

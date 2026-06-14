@@ -35,6 +35,7 @@ class _DailyScreenState extends State<DailyScreen> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     final daily = context.watch<DailyProvider>();
+    final accent = Theme.of(context).colorScheme.primary;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
       appBar: AppBar(
@@ -58,7 +59,7 @@ class _DailyScreenState extends State<DailyScreen> with SingleTickerProviderStat
                   controller: _tabController,
                   isScrollable: true,
                   indicator: BoxDecoration(
-                    color: const Color(0xFF7C5CFC).withOpacity(0.3),
+                    color: accent.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   indicatorSize: TabBarIndicatorSize.tab,
@@ -95,6 +96,7 @@ class _LessonsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
     final lessons = daily.lessons;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
@@ -122,7 +124,7 @@ class _LessonsTab extends StatelessWidget {
                         child: CircleAvatar(
                           radius: 20,
                           backgroundColor: Colors.transparent,
-                          child: Text(l.subject.isNotEmpty ? l.subject[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: const Color(0xFF7C5CFC))),
+                          child: Text(l.subject.isNotEmpty ? l.subject[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: accent)),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -138,7 +140,7 @@ class _LessonsTab extends StatelessWidget {
                       ),
                       if (l.status == 'pending')
                         IconButton(
-                          icon: const Icon(Icons.check_circle_outline, color: Color(0xFF7C5CFC)),
+                          icon: Icon(Icons.check_circle_outline, color: accent),
                           onPressed: () => daily.updateLesson(Lesson(
                             id: l.id, subject: l.subject, dayOfWeek: l.dayOfWeek,
                             startTime: l.startTime, endTime: l.endTime, colorHex: l.colorHex,
@@ -155,7 +157,7 @@ class _LessonsTab extends StatelessWidget {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF7C5CFC),
+        backgroundColor: accent,
         child: const Icon(Icons.add),
         onPressed: () => _addLesson(context, daily),
       ),
@@ -217,6 +219,7 @@ class _SleepTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
     final logs = daily.sleepLogs;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
@@ -228,7 +231,7 @@ class _SleepTab extends StatelessWidget {
               children: [
                 Text('Average Sleep', style: GoogleFonts.inter(color: const Color(0x99FFFFFF), fontSize: 13)),
                 const SizedBox(height: 8),
-                Text('${daily.averageSleep.toStringAsFixed(1)}h', style: GoogleFonts.inter(fontSize: 36, fontWeight: FontWeight.bold, color: const Color(0xFF7C5CFC))),
+                Text('${daily.averageSleep.toStringAsFixed(1)}h', style: GoogleFonts.inter(fontSize: 36, fontWeight: FontWeight.bold, color: accent)),
               ],
             ),
           ),
@@ -247,18 +250,18 @@ class _SleepTab extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     children: [
-                      const Icon(Icons.bed, color: Color(0xFF7C5CFC), size: 20),
+                      Icon(Icons.bed, color: accent, size: 20),
                       const SizedBox(width: 12),
                       Text(log.date.toString().substring(0, 10), style: GoogleFonts.inter(color: Colors.white)),
                       const Spacer(),
-                      Text('${log.durationHours.toStringAsFixed(1)}h', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: const Color(0xFF7C5CFC))),
+                      Text('${log.durationHours.toStringAsFixed(1)}h', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: accent)),
                     ],
                   ),
                 )),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF7C5CFC),
+        backgroundColor: accent,
         child: const Icon(Icons.add),
         onPressed: () => _logSleep(context, daily),
       ),
@@ -332,7 +335,7 @@ class _SocialTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final accent = Theme.of(context).colorScheme.primary;
       backgroundColor: const Color(0xFF0A0A0F),
       body: daily.socialPlatforms.isEmpty
           ? EmptyState(
@@ -378,7 +381,7 @@ class _SocialTab extends StatelessWidget {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF7C5CFC),
+        backgroundColor: accent,
         child: const Icon(Icons.add),
         onPressed: () => _addPlatform(context, daily),
       ),
@@ -400,7 +403,7 @@ class _SocialTab extends StatelessWidget {
       case 'instagram': return Colors.purple;
       case 'youtube': return Colors.red;
       case 'twitter': return Colors.blue;
-      case 'github': return Colors.black87;
+      case 'github': return Colors.white;
       default: return Colors.grey;
     }
   }
@@ -432,7 +435,7 @@ class _HabitsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final accent = Theme.of(context).colorScheme.primary;
       backgroundColor: const Color(0xFF0A0A0F),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -465,7 +468,7 @@ class _HabitsTab extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: daily.isHabitDoneToday(h.id)
-                                ? const Icon(Icons.check, size: 18, color: Color(0xFF7C5CFC))
+                                ? Icon(Icons.check, size: 18, color: accent)
                                 : null,
                           ),
                         ),
@@ -491,7 +494,7 @@ class _HabitsTab extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF7C5CFC),
+        backgroundColor: accent,
         child: const Icon(Icons.add),
         onPressed: () => _addHabit(context, daily),
       ),

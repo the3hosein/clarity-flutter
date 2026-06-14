@@ -34,6 +34,7 @@ class _MindScreenState extends State<MindScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
       appBar: AppBar(
@@ -56,7 +57,7 @@ class _MindScreenState extends State<MindScreen> with SingleTickerProviderStateM
                 child: TabBar(
                   controller: _tabController,
                   indicator: BoxDecoration(
-                    color: const Color(0xFF7C5CFC).withOpacity(0.3),
+                    color: accent.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   indicatorSize: TabBarIndicatorSize.tab,
@@ -91,6 +92,7 @@ class _TargetsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mind = context.watch<MindProvider>();
+    final accent = Theme.of(context).colorScheme.primary;
     final target = mind.mainTarget;
 
     if (target == null) {
@@ -127,11 +129,11 @@ class _TargetsTab extends StatelessWidget {
                         Row(
                           children: [
                             Expanded(child: Text(goal.title, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: Colors.white))),
-                            Text('${(goal.progress * 100).round()}%', style: GoogleFonts.inter(color: const Color(0xFF7C5CFC))),
+                            Text('${(goal.progress * 100).round()}%', style: GoogleFonts.inter(color: accent)),
                           ],
                         ),
                         const SizedBox(height: 4),
-                        AnimatedProgressBar(value: goal.progress, color: const Color(0xFF7C5CFC)),
+                        AnimatedProgressBar(value: goal.progress, color: accent),
                       ],
                     ),
                   )),
@@ -139,8 +141,8 @@ class _TargetsTab extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton.icon(
-                  icon: const Icon(Icons.edit, size: 16, color: Color(0xFF7C5CFC)),
-                  label: Text('Edit', style: GoogleFonts.inter(color: const Color(0xFF7C5CFC))),
+                  icon: Icon(Icons.edit, size: 16, color: accent),
+                  label: Text('Edit', style: GoogleFonts.inter(color: accent)),
                   onPressed: () => _showTargetEdit(context, target, mind),
                 ),
               ),
@@ -152,6 +154,7 @@ class _TargetsTab extends StatelessWidget {
   }
 
   void _showTargetEdit(BuildContext context, Target? existing, MindProvider mind) {
+    final accent = Theme.of(context).colorScheme.primary;
     final titleC = TextEditingController(text: existing?.title ?? '');
     final subC = List<TextEditingController>.generate(
         existing?.subGoals.length ?? 1, (i) => TextEditingController(text: existing?.subGoals[i].title ?? ''));
@@ -170,11 +173,11 @@ class _TargetsTab extends StatelessWidget {
             children: [
               Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
               const SizedBox(height: 16),
-              Text(existing != null ? 'Edit Target' : 'New Target', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              Text(existing != null ? 'Edit Target' : 'New Target', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
               const SizedBox(height: 16),
-              TextField(controller: titleC, decoration: const InputDecoration(labelText: 'Main Target', border: OutlineInputBorder())),
+              TextField(controller: titleC, style: GoogleFonts.inter(color: Colors.white), decoration: InputDecoration(labelText: 'Main Target', labelStyle: GoogleFonts.inter(color: Colors.white54))),
               const SizedBox(height: 16),
-              const Text('Sub-Goals', style: TextStyle(fontWeight: FontWeight.w500)),
+              Text('Sub-Goals', style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: Colors.white)),
               const SizedBox(height: 8),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 300),
@@ -185,8 +188,8 @@ class _TargetsTab extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Column(
                       children: [
-                        TextField(controller: subC[i], decoration: const InputDecoration(labelText: 'Goal', border: OutlineInputBorder())),
-                        Slider(value: prog[i], onChanged: (v) => setInnerState(() => prog[i] = v)),
+                        TextField(controller: subC[i], style: GoogleFonts.inter(color: Colors.white), decoration: InputDecoration(labelText: 'Goal', labelStyle: GoogleFonts.inter(color: Colors.white54))),
+                        Slider(value: prog[i], activeColor: accent, onChanged: (v) => setInnerState(() => prog[i] = v)),
                       ],
                     ),
                   ),
@@ -202,6 +205,7 @@ class _TargetsTab extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: accent),
                 onPressed: () {
                   final target = Target(
                     id: existing?.id,
@@ -232,6 +236,7 @@ class _ChannelsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mind = context.watch<MindProvider>();
+    final accent = Theme.of(context).colorScheme.primary;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
       body: ListView(
@@ -242,7 +247,7 @@ class _ChannelsTab extends StatelessWidget {
               Text('Channels', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
               const Spacer(),
               IconButton(
-                icon: const Icon(Icons.add_circle_outline, color: Color(0xFF7C5CFC)),
+                icon: Icon(Icons.add_circle_outline, color: accent),
                 onPressed: () => _showNewChannel(context, mind),
               ),
             ],
@@ -264,7 +269,7 @@ class _ChannelsTab extends StatelessWidget {
                     leading: GlassCard(
                       borderRadius: 12,
                       padding: const EdgeInsets.all(8),
-                      child: const Icon(Icons.tag, color: Color(0xFF7C5CFC), size: 20),
+                      child: Icon(Icons.tag, color: accent, size: 20),
                     ),
                     title: Text(channel.name, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: Colors.white)),
                     subtitle: Text('${channel.messages.length} messages', style: GoogleFonts.inter(fontSize: 12, color: const Color(0x99FFFFFF))),

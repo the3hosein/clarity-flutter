@@ -1,19 +1,15 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/app_state.dart';
-import '../providers/mind_provider.dart';
-import '../providers/daily_provider.dart';
-import '../providers/world_provider.dart';
-import '../providers/calendar_provider.dart';
 import 'home/dashboard_screen.dart';
 import 'settings/settings_screen.dart';
 import 'mind/mind_screen.dart';
 import 'daily/daily_screen.dart';
 import 'world/world_screen.dart';
 import 'calendar/calendar_screen.dart';
-import '../widgets/glass_card.dart';
 
 class AdaptiveLayoutScreen extends StatefulWidget {
   const AdaptiveLayoutScreen({super.key});
@@ -23,15 +19,42 @@ class AdaptiveLayoutScreen extends StatefulWidget {
 }
 
 class _AdaptiveLayoutScreenState extends State<AdaptiveLayoutScreen> {
+  Timer? _toastTimer;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MindProvider>().load();
-      context.read<DailyProvider>().load();
-      context.read<WorldProvider>().load();
-      context.read<CalendarProvider>().load();
+      final appState = context.read<AppState>();
+      appState.addListener(_onAppStateChanged);
     });
+  }
+
+  void _onAppStateChanged() {
+    final appState = context.read<AppState>();
+    if (appState.showToast) {
+      _toastTimer?.cancel();
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(appState.toastMessage ?? '', style: GoogleFonts.inter()),
+          backgroundColor: const Color(0xFF7C5CFC),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      _toastTimer = Timer(const Duration(milliseconds: 100), () {
+        if (mounted) context.read<AppState>().dismissToast();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _toastTimer?.cancel();
+    super.dispose();
   }
 
   @override
