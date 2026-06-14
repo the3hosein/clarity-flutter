@@ -21,6 +21,9 @@ jobs:
           flutter create --project-name clarity /tmp/plat_gen
           cp -R /tmp/plat_gen/ios .
           cp -R /tmp/plat_gen/android .
+          # Configure for unsigned build
+          cd ios
+          sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = com.example.clarity;/PRODUCT_BUNDLE_IDENTIFIER = com.clarity.app;/' Runner.xcodeproj/project.pbxproj
 
       - name: Get dependencies
         run: flutter pub get
