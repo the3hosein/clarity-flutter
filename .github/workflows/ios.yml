@@ -28,16 +28,16 @@ jobs:
 
       - name: Diagnostic info
         run: |
-          echo "=== Flutter version ==="
-          flutter --version
-          echo "=== Xcode version ==="
-          xcodebuild -version 2>/dev/null || echo "Xcode not found"
-          echo "=== macOS version ==="
-          sw_vers -productVersion 2>/dev/null || echo "sw_vers not available"
-          echo "=== CocoaPods version ==="
-          pod --version 2>/dev/null || echo "pod not found"
-          echo "=== Dart SDK ==="
-          dart --version 2>/dev/null
+          echo "=== Flutter version ===" | tee -a diagnostic.log
+          flutter --version 2>&1 | tee -a diagnostic.log
+          echo "=== Xcode version ===" | tee -a diagnostic.log
+          xcodebuild -version 2>/dev/null | tee -a diagnostic.log || echo "Xcode not found" | tee -a diagnostic.log
+          echo "=== macOS version ===" | tee -a diagnostic.log
+          sw_vers -productVersion 2>/dev/null | tee -a diagnostic.log || echo "sw_vers not available" | tee -a diagnostic.log
+          echo "=== CocoaPods version ===" | tee -a diagnostic.log
+          pod --version 2>/dev/null | tee -a diagnostic.log || echo "pod not found" | tee -a diagnostic.log
+          echo "=== Dart SDK ===" | tee -a diagnostic.log
+          dart --version 2>/dev/null | tee -a diagnostic.log
 
       - name: Run analysis
         run: flutter analyze 2>&1 | tee analysis.log
@@ -53,23 +53,32 @@ jobs:
           EXITCODE=${PIPESTATUS[0]}
           exit $EXITCODE
 
-      - name: Write build error to summary
+      - name: Expose build error as annotation
         if: failure()
         run: |
+          if [ -s build.log ]; then
+            echo "::error title=iOS Build Failed,file=build.log::$(tail -10 build.log)"
+          fi
           echo "# ❌ iOS Build Failed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo '## Build Log (last 50 lines)' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           tail -50 build.log >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## Analysis Log" >> $GITHUB_STEP_SUMMARY
+          echo '## Diagnostic Info' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat analysis.log >> $GITHUB_STEP_SUMMARY
+          cat diagnostic.log 2>/dev/null || echo "No diagnostic log" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## Pod Install Log" >> $GITHUB_STEP_SUMMARY
+          echo '## Analysis Log' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat ios/pod-install.log >> $GITHUB_STEP_SUMMARY
+          cat analysis.log 2>/dev/null || echo "No analysis log" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '## Pod Install Log' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat ios/pod-install.log 2>/dev/null || echo "No pod-install log" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload logs on failure
@@ -92,6 +101,13 @@ jobs:
         with:
           name: pod-install-log
           path: ios/pod-install.log
+
+      - name: Upload diagnostic log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-log
+          path: diagnostic.log
 
 
       - name: Package unsigned IPA
