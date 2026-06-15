@@ -24,19 +24,14 @@ jobs:
           # Change bundle ID
           sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = com.example.clarity;/PRODUCT_BUNDLE_IDENTIFIER = com.clarity.app;/' Runner.xcodeproj/project.pbxproj
           # Flutter now validates DEVELOPMENT_TEAM even with --no-codesign
-          python3 -c "
+          python3 << 'PYEOF'
 import re
 with open('Runner.xcodeproj/project.pbxproj', 'r') as f:
     content = f.read()
-# Change to Manual signing and add dummy team (preserving indentation)
-content = re.sub(
-    r'(\s*)(CODE_SIGN_STYLE) = Automatic;',
-    r'\1\2 = Manual;\n\1DEVELOPMENT_TEAM = DUMMYTEAM;',
-    content
-)
+content = re.sub(r'(\s*)(CODE_SIGN_STYLE) = Automatic;', r'\1\2 = Manual;\n\1DEVELOPMENT_TEAM = DUMMYTEAM;', content)
 with open('Runner.xcodeproj/project.pbxproj', 'w') as f:
     f.write(content)
-"
+PYEOF
           # Verify the settings took effect
           echo "=== Code Sign Settings in pbxproj ===" | tee -a /tmp/ios-setup.log
           grep -En 'CODE_SIGN|DEVELOPMENT_TEAM|PRODUCT_BUNDLE' Runner.xcodeproj/project.pbxproj | tail -30 | while read line; do echo "::notice title=pbxproj-settings::$line"; done
