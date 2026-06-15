@@ -26,11 +26,11 @@ jobs:
           # Flutter now requires a non-empty DEVELOPMENT_TEAM even with --no-codesign
           sed -i '' 's/DEVELOPMENT_TEAM = [^;]*;/DEVELOPMENT_TEAM = DUMMYTEAM;/g' Runner.xcodeproj/project.pbxproj
           sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = [^;]*;/PROVISIONING_PROFILE_SPECIFIER = "";/g' Runner.xcodeproj/project.pbxproj
-          # Verify the settings took effect
+          # Verify the settings took effect - dump as notice so it's visible on run page
           echo "=== Code Sign Settings in pbxproj ===" | tee -a /tmp/ios-setup.log
-          grep -En 'CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING|PRODUCT_BUNDLE' Runner.xcodeproj/project.pbxproj | tail -30 | tee -a /tmp/ios-setup.log
+          grep -En 'CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING|PRODUCT_BUNDLE' Runner.xcodeproj/project.pbxproj | tail -30 | tee -a /tmp/ios-setup.log | while read line; do echo "::notice title=pbxproj-settings::$line"; done
           echo "=== Show build settings via xcodebuild ===" | tee -a /tmp/ios-setup.log
-          xcodebuild -project Runner.xcodeproj -target Runner -showBuildSettings 2>&1 | grep -E 'CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING' | head -10 | tee -a /tmp/ios-setup.log
+          xcodebuild -project Runner.xcodeproj -target Runner -showBuildSettings 2>&1 | grep -E 'CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING' | head -10 | tee -a /tmp/ios-setup.log | while read line; do echo "::notice title=xcode-settings::$line"; done
 
       - name: Get dependencies
         run: flutter pub get
