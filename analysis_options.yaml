@@ -1,0 +1,16 @@
+analyzer:
+  errors:
+    unused_import: warning
+    unused_local_variable: warning
+    unused_field: warning
+
+linter:
+  rules:
+    prefer_const_constructors: false
+    prefer_const_literals_to_create_immutables: false
+    avoid_print: false
+    use_key_in_widget_constructors: false
+    prefer_const_declarations: false
+    prefer_final_locals: false
+    avoid_unnecessary_containers: false
+    sized_box_for_whitespace: false
