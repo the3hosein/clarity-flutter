@@ -67,6 +67,9 @@ jobs:
           if [ -s build.log ]; then
             echo "::error title=iOS Build Failed,file=build.log::$(tail -20 build.log)"
           fi
+          if [ -s diagnostic.log ]; then
+            grep -E 'Flutter|Xcode|macOS|CocoaPods|Dart' diagnostic.log | while read line; do echo "::notice title=diagnostic::$(echo $line | tr -d '\n')"; done
+          fi
           echo "# ❌ iOS Build Failed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo '## Build Log (last 50 lines)' >> $GITHUB_STEP_SUMMARY
