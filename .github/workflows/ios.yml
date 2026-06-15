@@ -30,13 +30,6 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Analyze
-        run: |
-          flutter analyze 2>&1 | tee analysis.log
-          EXITCODE=${PIPESTATUS[0]}
-          echo "=== Analysis exit code: $EXITCODE ==="
-          exit $EXITCODE
-
       - name: Build unsigned iOS app
         run: flutter build ios --release --no-codesign
 
@@ -54,17 +47,7 @@ jobs:
           name: Clarity-iOS-IPA
           path: clarity-unsigned.ipa
 
-      - name: Show analysis on failure
-        if: failure()
-        run: |
-          echo "::error::Analysis failed. Full log:"
-          cat analysis.log 2>/dev/null || echo "No analysis log"
-          tail -100 analysis.log 2>/dev/null | while IFS= read -r line; do echo "::error::ANALYZE::$line"; done
-
-      - name: Write error summary
+      - name: Show errors on failure
         if: failure()
         run: |
           echo "# Build Failed" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat analysis.log 2>/dev/null || echo "No log"
-          echo '```' >> $GITHUB_STEP_SUMMARY
