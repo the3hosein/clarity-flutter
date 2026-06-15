@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class GlassCard extends StatelessWidget {
@@ -6,8 +5,8 @@ class GlassCard extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final double borderRadius;
-  final double blur;
-  final Color? tint;
+  final Color? color;
+  final Color? borderColor;
   final VoidCallback? onTap;
   final Alignment? alignment;
 
@@ -16,50 +15,39 @@ class GlassCard extends StatelessWidget {
     required this.child,
     this.padding,
     this.margin,
-    this.borderRadius = 20,
-    this.blur = 15,
-    this.tint,
+    this.borderRadius = 16,
+    this.color,
+    this.borderColor,
     this.onTap,
     this.alignment,
   });
 
   @override
   Widget build(BuildContext context) {
-    final effectiveTint = tint ?? const Color(0x1AFFFFFF);
-    final card = ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: Container(
-          alignment: alignment,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = color ?? (isDark ? const Color(0xFF1C1C2B) : Colors.white);
+    final border = borderColor ?? (isDark ? const Color(0xFF2A2A3D) : const Color(0xFFE8E8F0));
+
+    final card = Container(
+      alignment: alignment,
+      margin: margin,
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(color: border, width: 0.5),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: Padding(
           padding: padding ?? const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: effectiveTint,
-            borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-          ),
           child: child,
         ),
       ),
     );
 
     if (onTap != null) {
-      return Padding(
-        padding: margin ?? EdgeInsets.zero,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(borderRadius),
-            onTap: onTap,
-            child: card,
-          ),
-        ),
-      );
+      return GestureDetector(onTap: onTap, child: card);
     }
-
-    return Padding(
-      padding: margin ?? EdgeInsets.zero,
-      child: card,
-    );
+    return card;
   }
 }

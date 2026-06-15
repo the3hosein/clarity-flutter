@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -40,9 +39,6 @@ class _AdaptiveLayoutScreenState extends State<AdaptiveLayoutScreen> {
         messenger.showSnackBar(
           SnackBar(
             content: Text(appState.toastMessage ?? '', style: GoogleFonts.inter()),
-            backgroundColor: const Color(0xFF7C5CFC),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -71,6 +67,7 @@ class _AdaptiveLayoutScreenState extends State<AdaptiveLayoutScreen> {
   }
 
   Widget _buildWideLayout(BuildContext context, AppState appState) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       children: [
         _Sidebar(
@@ -78,8 +75,9 @@ class _AdaptiveLayoutScreenState extends State<AdaptiveLayoutScreen> {
           collapsed: appState.sidebarCollapsed,
           onTabChanged: (i) => appState.setActiveTab(i),
           onToggle: () => appState.toggleSidebar(),
+          isDark: isDark,
         ),
-        const VerticalDivider(width: 1),
+        Container(width: 0.5, color: isDark ? const Color(0xFF2A2A3D) : const Color(0xFFE8E8F0)),
         Expanded(child: _buildContent(appState)),
       ],
     );
@@ -88,15 +86,9 @@ class _AdaptiveLayoutScreenState extends State<AdaptiveLayoutScreen> {
   Widget _buildNarrowLayout(BuildContext context, AppState appState) {
     return Scaffold(
       body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 350),
-        switchInCurve: Curves.easeInOut,
-        transitionBuilder: (child, animation) => SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0.1, 0),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-          child: FadeTransition(opacity: animation, child: child),
-        ),
+        duration: const Duration(milliseconds: 300),
+        switchInCurve: Curves.easeOutCubic,
+        transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
         child: _buildContent(appState),
       ),
       bottomNavigationBar: _BottomTabBar(
@@ -127,66 +119,77 @@ class _Sidebar extends StatelessWidget {
   final bool collapsed;
   final ValueChanged<int> onTabChanged;
   final VoidCallback onToggle;
+  final bool isDark;
 
   const _Sidebar({
     required this.activeTab,
     required this.collapsed,
     required this.onTabChanged,
     required this.onToggle,
+    required this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
     final tabs = appState.tabs;
+    final accent = Theme.of(context).colorScheme.primary;
+    final bgColor = isDark ? const Color(0xFF161622) : Colors.white;
+    final textColor = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
+    final activeBg = accent.withValues(alpha: 0.12);
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       width: collapsed ? 72 : 220,
-      child: ClipRRect(
-        borderRadius: const BorderRadius.horizontal(right: Radius.circular(24)),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0x1AFFFFFF),
-              border: Border(right: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
-            ),
-            child: SafeArea(
-              child: Column(
-                children: [
-                  const SizedBox(height: 40),
-                  CircleAvatar(
-                    radius: collapsed ? 18 : 24,
-                    backgroundColor: Colors.transparent,
-                    child: Text(appState.avatarEmoji, style: const TextStyle(fontSize: 28)),
-                  ),
-                  if (!collapsed) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      appState.userName,
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white),
-                    ),
-                  ],
-                  const SizedBox(height: 24),
-                  ...tabs.map((tab) => _SidebarItem(
-                        icon: tab.icon,
-                        label: tab.label,
-                        isActive: activeTab == tab.index,
-                        collapsed: collapsed,
-                        onTap: () => onTabChanged(tab.index),
-                      )),
-                  const Spacer(),
-                  IconButton(
-                    icon: Icon(collapsed ? Icons.arrow_forward_ios : Icons.arrow_back_ios, size: 16, color: Colors.white70),
-                    onPressed: onToggle,
-                  ),
-                  const SizedBox(height: 16),
-                ],
+      color: bgColor,
+      child: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 32),
+            if (!collapsed) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'Clarity',
+                  style: GoogleFonts.spaceGrotesk(fontSize: 22, fontWeight: FontWeight.w700, color: textColor),
+                ),
               ),
+              const SizedBox(height: 24),
+            ] else ...[
+              const SizedBox(height: 16),
+            ],
+            CircleAvatar(
+              radius: collapsed ? 16 : 20,
+              backgroundColor: activeBg,
+              child: Text(appState.avatarEmoji, style: const TextStyle(fontSize: 22)),
             ),
-          ),
+            if (!collapsed) ...[
+              const SizedBox(height: 8),
+              Text(appState.userName, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: textColor, fontSize: 14)),
+            ],
+            const SizedBox(height: 24),
+            ...tabs.map((tab) => _SidebarItem(
+                  icon: tab.icon,
+                  label: tab.label,
+                  isActive: activeTab == tab.index,
+                  collapsed: collapsed,
+                  onTap: () => onTabChanged(tab.index),
+                  accent: accent,
+                  isDark: isDark,
+                )),
+            const Spacer(),
+            IconButton(
+              icon: Icon(
+                collapsed ? Icons.chevron_right_rounded : Icons.chevron_left_rounded,
+                size: 20,
+                color: textSecondary,
+              ),
+              onPressed: onToggle,
+            ),
+            const SizedBox(height: 16),
+          ],
         ),
       ),
     );
@@ -199,6 +202,8 @@ class _SidebarItem extends StatelessWidget {
   final bool isActive;
   final bool collapsed;
   final VoidCallback onTap;
+  final Color accent;
+  final bool isDark;
 
   const _SidebarItem({
     required this.icon,
@@ -206,34 +211,38 @@ class _SidebarItem extends StatelessWidget {
     required this.isActive,
     required this.collapsed,
     required this.onTap,
+    required this.accent,
+    required this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.primary;
+    final textColor = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
+    final activeBg = accent.withValues(alpha: 0.12);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: isActive ? accent.withValues(alpha: 0.2) : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            border: isActive ? Border.all(color: accent.withValues(alpha: 0.3)) : null,
+            color: isActive ? activeBg : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
             children: [
-              Icon(icon, size: 22, color: isActive ? accent : Colors.white70),
+              Icon(icon, size: 20, color: isActive ? accent : textSecondary),
               if (!collapsed) ...[
                 const SizedBox(width: 12),
                 Text(
                   label,
                   style: GoogleFonts.inter(
-                    fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                    color: isActive ? Colors.white : Colors.white70,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                    color: isActive ? textColor : textSecondary,
                     fontSize: 14,
                   ),
                 ),
@@ -257,57 +266,57 @@ class _BottomTabBar extends StatelessWidget {
     final appState = context.watch<AppState>();
     final tabs = appState.tabs.toList();
     final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF161622) : Colors.white;
+    final textColor = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF5C5C6F) : const Color(0xFF9B9BB0);
+    final activeBg = accent.withValues(alpha: 0.12);
+    final borderColor = isDark ? const Color(0xFF2A2A3D) : const Color(0xFFE8E8F0);
 
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0x1AFFFFFF),
-            border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ...tabs.map((tab) => GestureDetector(
-                        onTap: () => onTabChanged(tab.index),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: activeTab == tab.index ? accent.withValues(alpha: 0.2) : Colors.transparent,
-                            borderRadius: BorderRadius.circular(14),
-                            border: activeTab == tab.index ? Border.all(color: accent.withValues(alpha: 0.3)) : null,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                tab.icon,
-                                size: 22,
-                                color: activeTab == tab.index ? accent : Colors.white54,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                tab.label,
-                                style: GoogleFonts.inter(
-                                  fontSize: 9,
-                                  fontWeight: activeTab == tab.index ? FontWeight.w600 : FontWeight.normal,
-                                  color: activeTab == tab.index ? accent : Colors.white54,
-                                ),
-                              ),
-                            ],
-                          ),
+    return Container(
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: Border(top: BorderSide(color: borderColor, width: 0.5)),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: tabs.map((tab) {
+              final isActive = activeTab == tab.index;
+              return GestureDetector(
+                onTap: () => onTabChanged(tab.index),
+                behavior: HitTestBehavior.opaque,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: isActive ? activeBg : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        tab.icon,
+                        size: 22,
+                        color: isActive ? accent : textSecondary,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        tab.label,
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                          color: isActive ? accent : textSecondary,
                         ),
-                      )),
-                ],
-              ),
-            ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
           ),
         ),
       ),

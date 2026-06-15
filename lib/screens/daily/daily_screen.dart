@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -36,43 +35,42 @@ class _DailyScreenState extends State<DailyScreen> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final daily = context.watch<DailyProvider>();
     final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
+    final cardBg = isDark ? const Color(0xFF1C1C2B) : Colors.white;
+    final border = isDark ? const Color(0xFF2A2A3D) : const Color(0xFFE8E8F0);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0F),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0A0A0F),
-        title: Text('Daily OS', style: GoogleFonts.inter()),
+        title: Text('Daily OS', style: GoogleFonts.spaceGrotesk(fontSize: 20, fontWeight: FontWeight.w600, color: textPrimary)),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0x1AFFFFFF),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-                ),
-                child: TabBar(
-                  controller: _tabController,
-                  isScrollable: true,
-                  indicator: BoxDecoration(
-                    color: accent.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
-                  unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
-                  tabs: const [
-                    Tab(text: 'Lessons'),
-                    Tab(text: 'Sleep'),
-                    Tab(text: 'Social'),
-                    Tab(text: 'Habits'),
-                  ],
-                ),
-              ),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            decoration: BoxDecoration(
+              color: cardBg,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: border, width: 0.5),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              indicator: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(8)),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+              unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
+              labelColor: Colors.white,
+              unselectedLabelColor: textSecondary,
+              dividerHeight: 0,
+              tabs: const [
+                Tab(text: 'Lessons'),
+                Tab(text: 'Sleep'),
+                Tab(text: 'Social'),
+                Tab(text: 'Habits'),
+              ],
             ),
           ),
         ),
@@ -97,12 +95,16 @@ class _LessonsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
     final lessons = daily.lessons;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0F),
+      backgroundColor: Colors.transparent,
       body: lessons.isEmpty
           ? EmptyState(
-              icon: Icons.menu_book_outlined,
+              icon: Icons.menu_book_rounded,
               title: 'No lessons yet',
               subtitle: 'Add your first lesson to get started',
               actionLabel: 'Add Lesson',
@@ -114,17 +116,16 @@ class _LessonsTab extends StatelessWidget {
               itemBuilder: (_, i) {
                 final l = lessons[i];
                 return GlassCard(
-                  margin: const EdgeInsets.only(bottom: 12),
+                  margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     children: [
-                      GlassCard(
-                        borderRadius: 100,
-                        padding: EdgeInsets.zero,
-                        child: CircleAvatar(
-                          radius: 20,
-                          backgroundColor: Colors.transparent,
-                          child: Text(l.subject.isNotEmpty ? l.subject[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: accent)),
+                      Container(
+                        width: 40, height: 40,
+                        decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
+                        child: Center(
+                          child: Text(l.subject.isNotEmpty ? l.subject[0].toUpperCase() : '?',
+                              style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: accent, fontSize: 16)),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -132,15 +133,15 @@ class _LessonsTab extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(l.subject, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: Colors.white)),
+                            Text(l.subject, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: textPrimary)),
                             const SizedBox(height: 2),
-                            Text(l.status, style: GoogleFonts.inter(fontSize: 12, color: const Color(0x99FFFFFF))),
+                            Text(l.status, style: GoogleFonts.inter(fontSize: 12, color: textSecondary)),
                           ],
                         ),
                       ),
                       if (l.status == 'pending')
                         IconButton(
-                          icon: Icon(Icons.check_circle_outline, color: accent),
+                          icon: Icon(Icons.check_circle_outline_rounded, color: accent, size: 22),
                           onPressed: () => daily.updateLesson(Lesson(
                             id: l.id, subject: l.subject, dayOfWeek: l.dayOfWeek,
                             startTime: l.startTime, endTime: l.endTime, colorHex: l.colorHex,
@@ -148,7 +149,7 @@ class _LessonsTab extends StatelessWidget {
                           )),
                         ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 20, color: Color(0x66FFFFFF)),
+                        icon: Icon(Icons.delete_outline_rounded, size: 20, color: textSecondary),
                         onPressed: () => daily.deleteLesson(l.id),
                       ),
                     ],
@@ -157,9 +158,8 @@ class _LessonsTab extends StatelessWidget {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: accent,
-        child: const Icon(Icons.add),
         onPressed: () => _addLesson(context, daily),
+        child: const Icon(Icons.add_rounded, color: Colors.white),
       ),
     );
   }
@@ -167,11 +167,15 @@ class _LessonsTab extends StatelessWidget {
   void _addLesson(BuildContext context, DailyProvider d) {
     final c = TextEditingController();
     int selectedDay = DateTime.now().weekday;
+    final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setInner) => AlertDialog(
-          title: Text('New Lesson', style: GoogleFonts.inter()),
+          title: Text('New Lesson', style: GoogleFonts.spaceGrotesk(color: textPrimary)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -189,22 +193,14 @@ class _LessonsTab extends StatelessWidget {
                   DropdownMenuItem(value: 6, child: Text('Saturday')),
                   DropdownMenuItem(value: 7, child: Text('Sunday')),
                 ],
-                onChanged: (v) {
-                  if (v != null) {
-                    selectedDay = v;
-                    setInner(() {});
-                  }
-                },
+                onChanged: (v) { if (v != null) { selectedDay = v; setInner(() {}); } },
               ),
             ],
           ),
           actions: [
             TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-            FilledButton(onPressed: () {
-              if (c.text.isNotEmpty) {
-                d.addLesson(Lesson(subject: c.text, dayOfWeek: selectedDay));
-                Navigator.pop(ctx);
-              }
+            FilledButton(style: FilledButton.styleFrom(backgroundColor: accent), onPressed: () {
+              if (c.text.isNotEmpty) { d.addLesson(Lesson(subject: c.text, dayOfWeek: selectedDay)); Navigator.pop(ctx); }
             }, child: const Text('Add')),
           ],
         ),
@@ -220,25 +216,30 @@ class _SleepTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
     final logs = daily.sleepLogs;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0F),
+      backgroundColor: Colors.transparent,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           GlassCard(
+            padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                Text('Average Sleep', style: GoogleFonts.inter(color: const Color(0x99FFFFFF), fontSize: 13)),
+                Text('Average Sleep', style: GoogleFonts.inter(color: textSecondary, fontSize: 13)),
                 const SizedBox(height: 8),
-                Text('${daily.averageSleep.toStringAsFixed(1)}h', style: GoogleFonts.inter(fontSize: 36, fontWeight: FontWeight.bold, color: accent)),
+                Text('${daily.averageSleep.toStringAsFixed(1)}h', style: GoogleFonts.jetBrainsMono(fontSize: 36, fontWeight: FontWeight.w700, color: accent)),
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           if (logs.isEmpty)
             EmptyState(
-              icon: Icons.bedtime_outlined,
+              icon: Icons.bedtime_rounded,
               title: 'No sleep logs',
               subtitle: 'Log your sleep to track patterns',
               actionLabel: 'Log Sleep',
@@ -250,28 +251,31 @@ class _SleepTab extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     children: [
-                      Icon(Icons.bed, color: accent, size: 20),
+                      Icon(Icons.bed_rounded, color: accent, size: 20),
                       const SizedBox(width: 12),
-                      Text(log.date.toString().substring(0, 10), style: GoogleFonts.inter(color: Colors.white)),
+                      Text(log.date.toString().substring(0, 10), style: GoogleFonts.inter(color: textPrimary)),
                       const Spacer(),
-                      Text('${log.durationHours.toStringAsFixed(1)}h', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: accent)),
+                      Text('${log.durationHours.toStringAsFixed(1)}h', style: GoogleFonts.jetBrainsMono(fontWeight: FontWeight.w600, color: accent)),
                     ],
                   ),
                 )),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: accent,
-        child: const Icon(Icons.add),
         onPressed: () => _logSleep(context, daily),
+        child: const Icon(Icons.add_rounded, color: Colors.white),
       ),
     );
   }
 
   void _logSleep(BuildContext context, DailyProvider d) {
     final now = DateTime.now();
+    final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
     TimeOfDay bedtime = const TimeOfDay(hour: 23, minute: 0);
     TimeOfDay wakeTime = const TimeOfDay(hour: 7, minute: 0);
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
@@ -281,13 +285,14 @@ class _SleepTab extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
-              const SizedBox(height: 16),
-              const Text('Log Sleep', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 16),
+              Center(child: Container(width: 36, height: 4, decoration: BoxDecoration(color: isDark ? const Color(0xFF2A2A3D) : const Color(0xFFE8E8F0), borderRadius: BorderRadius.circular(2)))),
+              const SizedBox(height: 20),
+              Text('Log Sleep', style: GoogleFonts.spaceGrotesk(fontSize: 18, fontWeight: FontWeight.w600, color: textPrimary)),
+              const SizedBox(height: 20),
               OutlinedButton.icon(
-                icon: const Icon(Icons.bedtime, size: 18),
-                label: Text('Bedtime: ${bedtime.format(ctx)}'),
+                icon: Icon(Icons.bedtime_rounded, size: 18, color: textSecondary),
+                label: Text('Bedtime: ${bedtime.format(ctx)}', style: GoogleFonts.inter(color: textPrimary)),
+                style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () async {
                   final t = await showTimePicker(context: ctx, initialTime: bedtime);
                   if (t != null) setInner(() => bedtime = t);
@@ -295,24 +300,30 @@ class _SleepTab extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               OutlinedButton.icon(
-                icon: const Icon(Icons.wb_sunny, size: 18),
-                label: Text('Wake: ${wakeTime.format(ctx)}'),
+                icon: Icon(Icons.wb_sunny_rounded, size: 18, color: textSecondary),
+                label: Text('Wake: ${wakeTime.format(ctx)}', style: GoogleFonts.inter(color: textPrimary)),
+                style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () async {
                   final t = await showTimePicker(context: ctx, initialTime: wakeTime);
                   if (t != null) setInner(() => wakeTime = t);
                 },
               ),
               const SizedBox(height: 16),
-              Text(_sleepDuration(bedtime, wakeTime), style: const TextStyle(fontSize: 32)),
-              FilledButton(
-                onPressed: () {
-                  final bedDT = DateTime(now.year, now.month, now.day, bedtime.hour, bedtime.minute);
-                  var wakeDT = DateTime(now.year, now.month, now.day, wakeTime.hour, wakeTime.minute);
-                  if (wakeDT.isBefore(bedDT)) wakeDT = wakeDT.add(const Duration(days: 1));
-                  d.addSleepLog(SleepLog(date: DateTime(now.year, now.month, now.day), bedtime: bedDT, wakeTime: wakeDT));
-                  Navigator.pop(ctx);
-                },
-                child: const Text('Log'),
+              Text(_sleepDuration(bedtime, wakeTime), style: GoogleFonts.jetBrainsMono(fontSize: 32, fontWeight: FontWeight.w700, color: textPrimary)),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(backgroundColor: accent, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.symmetric(vertical: 14)),
+                  onPressed: () {
+                    final bedDT = DateTime(now.year, now.month, now.day, bedtime.hour, bedtime.minute);
+                    var wakeDT = DateTime(now.year, now.month, now.day, wakeTime.hour, wakeTime.minute);
+                    if (wakeDT.isBefore(bedDT)) wakeDT = wakeDT.add(const Duration(days: 1));
+                    d.addSleepLog(SleepLog(date: DateTime(now.year, now.month, now.day), bedtime: bedDT, wakeTime: wakeDT));
+                    Navigator.pop(ctx);
+                  },
+                  child: const Text('Log'),
+                ),
               ),
             ],
           ),
@@ -336,11 +347,15 @@ class _SocialTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0F),
+      backgroundColor: Colors.transparent,
       body: daily.socialPlatforms.isEmpty
           ? EmptyState(
-              icon: Icons.public_outlined,
+              icon: Icons.public_rounded,
               title: 'No platforms',
               subtitle: 'Add social platforms to track your usage',
               actionLabel: 'Add Platform',
@@ -352,28 +367,28 @@ class _SocialTab extends StatelessWidget {
               itemBuilder: (_, i) {
                 final p = daily.socialPlatforms[i];
                 return GlassCard(
-                  margin: const EdgeInsets.only(bottom: 12),
+                  margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     children: [
-                      GlassCard(
-                        borderRadius: 12,
-                        padding: const EdgeInsets.all(10),
-                        child: Icon(_platformIcon(p.name), color: _platformColor(p.name), size: 22),
+                      Container(
+                        width: 40, height: 40,
+                        decoration: BoxDecoration(color: _platformColor(p.name).withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
+                        child: Icon(_platformIcon(p.name), color: _platformColor(p.name), size: 20),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(p.name, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: Colors.white)),
+                            Text(p.name, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: textPrimary)),
                             const SizedBox(height: 2),
-                            Text('Daily limit: ${p.dailyLimitMinutes}min', style: GoogleFonts.inter(fontSize: 12, color: const Color(0x99FFFFFF))),
+                            Text('Daily limit: ${p.dailyLimitMinutes}min', style: GoogleFonts.inter(fontSize: 12, color: textSecondary)),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 20, color: Color(0x66FFFFFF)),
+                        icon: Icon(Icons.delete_outline_rounded, size: 20, color: textSecondary),
                         onPressed: () => daily.deleteSocialPlatform(p.id),
                       ),
                     ],
@@ -382,47 +397,44 @@ class _SocialTab extends StatelessWidget {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: accent,
-        child: const Icon(Icons.add),
         onPressed: () => _addPlatform(context, daily),
+        child: const Icon(Icons.add_rounded, color: Colors.white),
       ),
     );
   }
 
   IconData _platformIcon(String name) {
     switch (name.toLowerCase()) {
-      case 'instagram': return Icons.camera_alt;
-      case 'youtube': return Icons.play_circle;
-      case 'twitter': return Icons.alternate_email;
-      case 'github': return Icons.code;
-      default: return Icons.public;
+      case 'instagram': return Icons.camera_alt_rounded;
+      case 'youtube': return Icons.play_circle_rounded;
+      case 'twitter': return Icons.alternate_email_rounded;
+      case 'github': return Icons.code_rounded;
+      default: return Icons.public_rounded;
     }
   }
 
   Color _platformColor(String name) {
     switch (name.toLowerCase()) {
-      case 'instagram': return Colors.purple;
-      case 'youtube': return Colors.red;
-      case 'twitter': return Colors.blue;
-      case 'github': return Colors.white;
-      default: return Colors.grey;
+      case 'instagram': return const Color(0xFFE1306C);
+      case 'youtube': return const Color(0xFFFF0000);
+      case 'twitter': return const Color(0xFF1DA1F2);
+      case 'github': return const Color(0xFF8E8EA0);
+      default: return const Color(0xFF8E8EA0);
     }
   }
 
   void _addPlatform(BuildContext context, DailyProvider d) {
     final c = TextEditingController();
+    final accent = Theme.of(context).colorScheme.primary;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Add Platform'),
+        title: Text('Add Platform', style: GoogleFonts.spaceGrotesk()),
         content: TextField(controller: c, decoration: const InputDecoration(labelText: 'Platform name')),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () {
-            if (c.text.isNotEmpty) {
-              d.addSocialPlatform(SocialPlatform(name: c.text));
-              Navigator.pop(ctx);
-            }
+          FilledButton(style: FilledButton.styleFrom(backgroundColor: accent), onPressed: () {
+            if (c.text.isNotEmpty) { d.addSocialPlatform(SocialPlatform(name: c.text)); Navigator.pop(ctx); }
           }, child: const Text('Add')),
         ],
       ),
@@ -437,16 +449,21 @@ class _HabitsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
+    final ringBg = isDark ? const Color(0xFF2A2A3D) : const Color(0xFFE8E8F0);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0F),
+      backgroundColor: Colors.transparent,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text('Today\'s Habits', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-          const SizedBox(height: 16),
+          Text("Today's Habits", style: GoogleFonts.spaceGrotesk(fontSize: 18, fontWeight: FontWeight.w600, color: textPrimary)),
+          const SizedBox(height: 12),
           if (daily.habits.isEmpty)
             EmptyState(
-              icon: Icons.checklist_outlined,
+              icon: Icons.checklist_rounded,
               title: 'No habits yet',
               subtitle: 'Create habits to build your daily routine',
               actionLabel: 'Add Habit',
@@ -454,25 +471,21 @@ class _HabitsTab extends StatelessWidget {
             )
           else
             ...daily.habits.map((h) => GlassCard(
-                  margin: const EdgeInsets.only(bottom: 12),
+                  margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     children: [
                       GestureDetector(
                         onTap: () => daily.toggleHabit(h.id),
-                        child: GlassCard(
-                          borderRadius: 8,
-                          padding: const EdgeInsets.all(2),
-                          child: Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: daily.isHabitDoneToday(h.id)
-                                ? Icon(Icons.check, size: 18, color: accent)
-                                : null,
+                        child: Container(
+                          width: 28, height: 28,
+                          decoration: BoxDecoration(
+                            color: daily.isHabitDoneToday(h.id) ? accent : ringBg,
+                            borderRadius: BorderRadius.circular(8),
                           ),
+                          child: daily.isHabitDoneToday(h.id)
+                              ? const Icon(Icons.check_rounded, size: 18, color: Colors.white)
+                              : null,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -480,14 +493,14 @@ class _HabitsTab extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(h.name, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: Colors.white)),
+                            Text(h.name, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: textPrimary)),
                             const SizedBox(height: 2),
-                            Text('Done ${h.completedDates.length} times', style: GoogleFonts.inter(fontSize: 12, color: const Color(0x99FFFFFF))),
+                            Text('Done ${h.completedDates.length} times', style: GoogleFonts.inter(fontSize: 12, color: textSecondary)),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 20, color: Color(0x66FFFFFF)),
+                        icon: Icon(Icons.delete_outline_rounded, size: 20, color: textSecondary),
                         onPressed: () => daily.deleteHabit(h.id),
                       ),
                     ],
@@ -496,27 +509,24 @@ class _HabitsTab extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: accent,
-        child: const Icon(Icons.add),
         onPressed: () => _addHabit(context, daily),
+        child: const Icon(Icons.add_rounded, color: Colors.white),
       ),
     );
   }
 
   void _addHabit(BuildContext context, DailyProvider d) {
     final c = TextEditingController();
+    final accent = Theme.of(context).colorScheme.primary;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('New Habit'),
+        title: Text('New Habit', style: GoogleFonts.spaceGrotesk()),
         content: TextField(controller: c, decoration: const InputDecoration(labelText: 'Habit name')),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () {
-            if (c.text.isNotEmpty) {
-              d.addHabit(Habit(name: c.text));
-              Navigator.pop(ctx);
-            }
+          FilledButton(style: FilledButton.styleFrom(backgroundColor: accent), onPressed: () {
+            if (c.text.isNotEmpty) { d.addHabit(Habit(name: c.text)); Navigator.pop(ctx); }
           }, child: const Text('Add')),
         ],
       ),

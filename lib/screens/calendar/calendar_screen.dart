@@ -38,30 +38,38 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
   Widget build(BuildContext context) {
     final cal = context.watch<CalendarProvider>();
     final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
+    final cardBg = isDark ? const Color(0xFF1C1C2B) : Colors.white;
+    final border = isDark ? const Color(0xFF2A2A3D) : const Color(0xFFE8E8F0);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0F),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0A0A0F),
-        title: Text(DateFormat('MMMM yyyy').format(cal.selectedDate), style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600)),
+        title: Text(DateFormat('MMMM yyyy').format(cal.selectedDate), style: GoogleFonts.spaceGrotesk(fontSize: 20, fontWeight: FontWeight.w600, color: textPrimary)),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: const Color(0x1AFFFFFF),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+              color: cardBg,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: border, width: 0.5),
             ),
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
                 color: accent,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(8),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
-              labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
-              unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
+              labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+              unselectedLabelStyle: GoogleFonts.inter(fontSize: 13, color: textSecondary),
+              labelColor: Colors.white,
+              unselectedLabelColor: textSecondary,
+              dividerHeight: 0,
               tabs: const [
                 Tab(text: 'Month'),
                 Tab(text: 'Week'),
@@ -80,15 +88,17 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: accent,
-        child: const Icon(Icons.add, color: Colors.white),
         onPressed: () => _showEventEditor(context, null, cal),
+        child: const Icon(Icons.add_rounded, color: Colors.white),
       ),
     );
   }
 
   void _showEventEditor(BuildContext context, CalendarEvent? existing, CalendarProvider cal) {
     final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
     final titleC = TextEditingController(text: existing?.title ?? '');
     final descC = TextEditingController(text: existing?.notes ?? '');
     DateTime startDate = existing?.startDate ?? DateTime.now();
@@ -99,7 +109,6 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF0A0A0F),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setInner) => Padding(
@@ -108,40 +117,36 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2))),
-              const SizedBox(height: 16),
-              Text(existing != null ? 'Edit Event' : 'New Event', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
-              const SizedBox(height: 16),
+              Center(
+                child: Container(
+                  width: 36, height: 4,
+                  decoration: BoxDecoration(color: isDark ? const Color(0xFF2A2A3D) : const Color(0xFFE8E8F0), borderRadius: BorderRadius.circular(2)),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(existing != null ? 'Edit Event' : 'New Event', style: GoogleFonts.spaceGrotesk(fontSize: 18, fontWeight: FontWeight.w600, color: textPrimary)),
+              const SizedBox(height: 20),
               TextField(
                 controller: titleC,
-                style: GoogleFonts.inter(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Title',
-                  labelStyle: GoogleFonts.inter(color: Colors.white54),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: accent)),
-                ),
+                style: GoogleFonts.inter(color: textPrimary),
+                decoration: InputDecoration(labelText: 'Title', labelStyle: GoogleFonts.inter(color: textSecondary)),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: descC,
-                style: GoogleFonts.inter(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                  labelStyle: GoogleFonts.inter(color: Colors.white54),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: accent)),
-                ),
+                style: GoogleFonts.inter(color: textPrimary),
+                decoration: InputDecoration(labelText: 'Description', labelStyle: GoogleFonts.inter(color: textSecondary)),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      icon: const Icon(Icons.calendar_today, size: 18, color: Colors.white54),
-                      label: Text(DateFormat('MMM d').format(startDate), style: GoogleFonts.inter(color: Colors.white)),
+                      icon: Icon(Icons.calendar_today_rounded, size: 16, color: textSecondary),
+                      label: Text(DateFormat('MMM d').format(startDate), style: GoogleFonts.inter(color: textPrimary, fontSize: 13)),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       onPressed: () async {
                         final d = await showDatePicker(context: ctx, initialDate: startDate, firstDate: DateTime(2020), lastDate: DateTime(2030));
@@ -152,10 +157,11 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                   const SizedBox(width: 8),
                   Expanded(
                     child: OutlinedButton.icon(
-                      icon: const Icon(Icons.access_time, size: 18, color: Colors.white54),
-                      label: Text(startTime.format(ctx), style: GoogleFonts.inter(color: Colors.white)),
+                      icon: Icon(Icons.access_time_rounded, size: 16, color: textSecondary),
+                      label: Text(startTime.format(ctx), style: GoogleFonts.inter(color: textPrimary, fontSize: 13)),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       onPressed: () async {
                         final t = await showTimePicker(context: ctx, initialTime: startTime);
@@ -165,15 +171,16 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      icon: const Icon(Icons.calendar_today, size: 18, color: Colors.white54),
-                      label: Text(DateFormat('MMM d').format(endDate), style: GoogleFonts.inter(color: Colors.white)),
+                      icon: Icon(Icons.calendar_today_rounded, size: 16, color: textSecondary),
+                      label: Text(DateFormat('MMM d').format(endDate), style: GoogleFonts.inter(color: textPrimary, fontSize: 13)),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       onPressed: () async {
                         final d = await showDatePicker(context: ctx, initialDate: endDate, firstDate: DateTime(2020), lastDate: DateTime(2030));
@@ -184,10 +191,11 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                   const SizedBox(width: 8),
                   Expanded(
                     child: OutlinedButton.icon(
-                      icon: const Icon(Icons.access_time, size: 18, color: Colors.white54),
-                      label: Text(endTime.format(ctx), style: GoogleFonts.inter(color: Colors.white)),
+                      icon: Icon(Icons.access_time_rounded, size: 16, color: textSecondary),
+                      label: Text(endTime.format(ctx), style: GoogleFonts.inter(color: textPrimary, fontSize: 13)),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       onPressed: () async {
                         final t = await showTimePicker(context: ctx, initialTime: endTime);
@@ -197,21 +205,29 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: accent),
-                onPressed: () {
-                  final event = CalendarEvent(
-                    id: existing?.id,
-                    title: titleC.text,
-                    notes: descC.text,
-                    startDate: DateTime(startDate.year, startDate.month, startDate.day, startTime.hour, startTime.minute),
-                    endDate: DateTime(endDate.year, endDate.month, endDate.day, endTime.hour, endTime.minute),
-                  );
-                  cal.saveEvent(event);
-                  Navigator.pop(ctx);
-                },
-                child: Text('Save', style: GoogleFonts.inter()),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: accent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  onPressed: () {
+                    final event = CalendarEvent(
+                      id: existing?.id,
+                      title: titleC.text,
+                      notes: descC.text,
+                      startDate: DateTime(startDate.year, startDate.month, startDate.day, startTime.hour, startTime.minute),
+                      endDate: DateTime(endDate.year, endDate.month, endDate.day, endTime.hour, endTime.minute),
+                    );
+                    cal.saveEvent(event);
+                    Navigator.pop(ctx);
+                  },
+                  child: Text('Save', style: GoogleFonts.inter()),
+                ),
               ),
               const SizedBox(height: 24),
             ],
@@ -229,6 +245,12 @@ class _MonthView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
+    final cardBg = isDark ? const Color(0xFF1C1C2B) : Colors.white;
+    final border = isDark ? const Color(0xFF2A2A3D) : const Color(0xFFE8E8F0);
+
     final firstDay = DateTime(cal.selectedDate.year, cal.selectedDate.month, 1);
     final lastDay = DateTime(cal.selectedDate.year, cal.selectedDate.month + 1, 0);
     final startWeekday = firstDay.weekday % 7;
@@ -241,21 +263,23 @@ class _MonthView extends StatelessWidget {
 
     return Column(
       children: [
-        // Weekday headers
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           child: Row(
             children: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-                .map((d) => Expanded(child: Center(child: Text(d, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0x99FFFFFF))))))
+                .map((d) => Expanded(
+                      child: Center(
+                        child: Text(d, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: textSecondary)),
+                      ),
+                    ))
                 .toList(),
           ),
         ),
-        // Grid
         Expanded(
           flex: 3,
           child: GridView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 7,
               childAspectRatio: 1,
               mainAxisSpacing: 4,
@@ -268,16 +292,15 @@ class _MonthView extends StatelessWidget {
               final today = DateTime.now();
               final isToday = d.year == today.year && d.month == today.month && d.day == today.day;
               final isSelected = d.year == cal.selectedDate.year && d.month == cal.selectedDate.month && d.day == cal.selectedDate.day;
-              final hasEvent = cal.events.any((e) =>
-                  e.startDate.year == d.year && e.startDate.month == d.month && e.startDate.day == d.day);
+              final hasEvent = cal.events.any((e) => e.startDate.year == d.year && e.startDate.month == d.month && e.startDate.day == d.day);
 
               return GestureDetector(
                 onTap: () => cal.setSelectedDate(d),
-                child: Container(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    color: isSelected ? accent : const Color(0x1AFFFFFF),
+                    color: isSelected ? accent : (isToday ? accent.withValues(alpha: 0.12) : Colors.transparent),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -285,14 +308,14 @@ class _MonthView extends StatelessWidget {
                       Text(
                         '${d.day}',
                         style: GoogleFonts.inter(
-                          color: isSelected ? Colors.white : (isToday ? accent : Colors.white),
-                          fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                          color: isSelected ? Colors.white : (isToday ? accent : textPrimary),
+                          fontWeight: isToday || isSelected ? FontWeight.w600 : FontWeight.normal,
                           fontSize: 13,
                         ),
                       ),
-                      if (hasEvent)
+                      if (hasEvent && !isSelected)
                         Container(
-                          width: 5, height: 5,
+                          width: 4, height: 4,
                           decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
                         ),
                     ],
@@ -302,16 +325,15 @@ class _MonthView extends StatelessWidget {
             },
           ),
         ),
-        // Events for selected day
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: Row(
             children: [
-              Text('Events for ${DateFormat('MMM d').format(cal.selectedDate)}', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white)),
+              Text('Events for ${DateFormat('MMM d').format(cal.selectedDate)}', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: textPrimary, fontSize: 14)),
               const Spacer(),
               TextButton(
                 onPressed: () => cal.setSelectedDate(DateTime.now()),
-                child: Text('Today', style: GoogleFonts.inter(color: accent)),
+                child: Text('Today', style: GoogleFonts.inter(color: accent, fontSize: 13)),
               ),
             ],
           ),
@@ -321,32 +343,27 @@ class _MonthView extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             children: cal.eventsForDate(cal.selectedDate).isEmpty
-                ? [EmptyState(
-                    icon: Icons.event_busy,
-                    title: 'No Events',
-                    subtitle: 'Tap + to add an event for this day.',
-                  )]
+                ? [const EmptyState(icon: Icons.event_busy_rounded, title: 'No Events', subtitle: 'Tap + to add an event')]
                 : cal.eventsForDate(cal.selectedDate).map((e) => GlassCard(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       child: Row(
                         children: [
-                            Container(width: 4, height: 40, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
-                            const SizedBox(width: 12),
+                          Container(width: 3, height: 36, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(e.title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 14)),
+                                Text(e.title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: textPrimary, fontSize: 14)),
                                 const SizedBox(height: 2),
                                 Text('${DateFormat('HH:mm').format(e.startDate)} - ${DateFormat('HH:mm').format(e.endDate)}',
-                                    style: GoogleFonts.inter(fontSize: 11, color: const Color(0x99FFFFFF))),
+                                    style: GoogleFonts.jetBrainsMono(fontSize: 11, color: textSecondary)),
                               ],
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 20),
-                            color: Colors.white54,
+                            icon: Icon(Icons.delete_outline_rounded, size: 18, color: textSecondary),
                             onPressed: () => cal.deleteEvent(e.id),
                           ),
                         ],
@@ -366,86 +383,81 @@ class _WeekView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
     final weekStart = cal.selectedDate.subtract(Duration(days: cal.selectedDate.weekday % 7));
     final weekDays = List.generate(7, (i) => weekStart.add(Duration(days: i)));
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0F),
-      body: Column(
-        children: [
-          // Week header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: Row(
-              children: weekDays.map((d) {
-                final isSelected = d.day == cal.selectedDate.day;
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => cal.setSelectedDate(d),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isSelected ? accent : const Color(0x1AFFFFFF),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.weekday % 7],
-                              style: GoogleFonts.inter(fontSize: 11, color: isSelected ? Colors.white : const Color(0x99FFFFFF))),
-                          Text('${d.day}',
-                              style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: isSelected ? Colors.white : Colors.white)),
-                        ],
-                      ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: weekDays.map((d) {
+              final isSelected = d.day == cal.selectedDate.day && d.month == cal.selectedDate.month;
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () => cal.setSelectedDate(d),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? accent : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(['S', 'M', 'T', 'W', 'T', 'F', 'S'][d.weekday % 7],
+                            style: GoogleFonts.inter(fontSize: 11, color: isSelected ? Colors.white : textSecondary)),
+                        const SizedBox(height: 2),
+                        Text('${d.day}',
+                            style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: isSelected ? Colors.white : textPrimary, fontSize: 14)),
+                      ],
                     ),
                   ),
-                );
-              }).toList(),
-            ),
+                ),
+              );
+            }).toList(),
           ),
-          const SizedBox(height: 8),
-          // Events
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: cal.eventsForDate(cal.selectedDate).isEmpty
-                  ? [EmptyState(
-                      icon: Icons.event_busy,
-                      title: 'No Events',
-                      subtitle: 'Tap + to add an event for this day.',
-                    )]
-                  : cal.eventsForDate(cal.selectedDate).map((e) => GlassCard(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        child: Row(
-                          children: [
-                          Container(width: 4, height: 40, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(e.title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 14)),
-                                  const SizedBox(height: 2),
-                                  e.notes.isNotEmpty
-                                      ? Text(e.notes, style: GoogleFonts.inter(fontSize: 11, color: const Color(0x99FFFFFF)))
-                                      : Text('${DateFormat('HH:mm').format(e.startDate)} - ${DateFormat('HH:mm').format(e.endDate)}',
-                                          style: GoogleFonts.inter(fontSize: 11, color: const Color(0x99FFFFFF))),
-                                ],
-                              ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            children: cal.eventsForDate(cal.selectedDate).isEmpty
+                ? [const EmptyState(icon: Icons.event_busy_rounded, title: 'No Events', subtitle: 'Tap + to add an event')]
+                : cal.eventsForDate(cal.selectedDate).map((e) => GlassCard(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      child: Row(
+                        children: [
+                          Container(width: 3, height: 36, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(e.title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: textPrimary, fontSize: 14)),
+                                const SizedBox(height: 2),
+                                e.notes.isNotEmpty
+                                    ? Text(e.notes, style: GoogleFonts.inter(fontSize: 12, color: textSecondary))
+                                    : Text('${DateFormat('HH:mm').format(e.startDate)} - ${DateFormat('HH:mm').format(e.endDate)}',
+                                        style: GoogleFonts.jetBrainsMono(fontSize: 11, color: textSecondary)),
+                              ],
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, size: 20),
-                              color: Colors.white54,
-                              onPressed: () => cal.deleteEvent(e.id),
-                            ),
-                          ],
-                        ),
-                      )).toList(),
-            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete_outline_rounded, size: 18, color: textSecondary),
+                            onPressed: () => cal.deleteEvent(e.id),
+                          ),
+                        ],
+                      ),
+                    )).toList(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -458,16 +470,14 @@ class _AgendaView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
     final sorted = List<CalendarEvent>.from(cal.events)..sort((a, b) => a.startDate.compareTo(b.startDate));
     if (sorted.isEmpty) {
-      return const EmptyState(
-        icon: Icons.event_busy,
-        title: 'No Events',
-        subtitle: 'Your calendar is clear. Tap + to add an event.',
-      );
+      return const EmptyState(icon: Icons.event_busy_rounded, title: 'No Events', subtitle: 'Your calendar is clear');
     }
 
-    // Group by date
     final grouped = <String, List<CalendarEvent>>{};
     for (final e in sorted) {
       final key = DateFormat('EEEE, MMMM d').format(e.startDate);
@@ -481,31 +491,30 @@ class _AgendaView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(entry.key, style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(entry.key, style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600, fontSize: 15, color: textPrimary)),
             ),
             ...entry.value.map((e) => GlassCard(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   onTap: () => onEditEvent(e),
                   child: Row(
                     children: [
-                      Container(width: 4, height: 40, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
+                      Container(width: 3, height: 36, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(e.title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 14)),
+                            Text(e.title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: textPrimary, fontSize: 14)),
                             const SizedBox(height: 2),
                             Text('${DateFormat('HH:mm').format(e.startDate)} - ${DateFormat('HH:mm').format(e.endDate)}',
-                                style: GoogleFonts.inter(fontSize: 11, color: const Color(0x99FFFFFF))),
+                                style: GoogleFonts.jetBrainsMono(fontSize: 11, color: textSecondary)),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 20),
-                        color: Colors.white54,
+                        icon: Icon(Icons.delete_outline_rounded, size: 18, color: textSecondary),
                         onPressed: () => cal.deleteEvent(e.id),
                       ),
                     ],

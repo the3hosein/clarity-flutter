@@ -22,29 +22,46 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = iconColor ?? Theme.of(context).colorScheme.primary;
+    final accent = iconColor ?? Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            GlassCard(
-              borderRadius: 24,
-              padding: const EdgeInsets.all(24),
-              child: Icon(icon, size: 48, color: color),
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [accent.withValues(alpha: 0.15), accent.withValues(alpha: 0.05)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Icon(icon, size: 36, color: accent),
             ),
             const SizedBox(height: 24),
             Text(
               title,
-              style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E),
+              ),
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 8),
               Text(
                 subtitle!,
-                style: GoogleFonts.inter(fontSize: 14, color: const Color(0x99FFFFFF)),
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80),
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -55,7 +72,9 @@ class EmptyState extends StatelessWidget {
                 label: Text(actionLabel!),
                 onPressed: onAction,
                 style: FilledButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  backgroundColor: accent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                 ),
               ),
