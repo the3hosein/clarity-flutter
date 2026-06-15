@@ -74,8 +74,8 @@ jobs:
             echo "::error title=iOS Build Failed,file=build.log::$(head -100 build.log)"
           fi
           if [ -s analysis.log ]; then
-            grep -E 'error|Error' analysis.log | head -20 | while read line; do echo "::error title=Analysis,file=analysis.log::$line"; done
-            grep -E 'warning|Warning|info' analysis.log | head -20 | while read line; do echo "::notice title=Analysis,file=analysis.log::$line"; done
+            echo "::error title=Analysis Full,file=analysis.log::$(cat analysis.log)"
+            grep -E 'error|Error|warning|Warning' analysis.log | head -20 | while read line; do echo "::error title=AnalysisErr,file=analysis.log::$line"; done
           fi
           if [ -s diagnostic.log ]; then
             grep -E 'Flutter|Xcode|macOS|CocoaPods|Dart' diagnostic.log | while read line; do echo "::notice title=diagnostic::$(echo $line | tr -d '\n')"; done
