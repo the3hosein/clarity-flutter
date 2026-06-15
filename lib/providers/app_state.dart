@@ -103,11 +103,11 @@ class AppState extends ChangeNotifier {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: accentColor.withOpacity(0.5)),
+            borderSide: BorderSide(color: accentColor.withValues(alpha: 0.5)),
           ),
           labelStyle: const TextStyle(color: Color(0x99FFFFFF)),
         ),
-        dividerTheme: DividerThemeData(color: const Color(0x1AFFFFFF), thickness: 1),
+        dividerTheme: const DividerThemeData(color: Color(0x1AFFFFFF), thickness: 1),
         chipTheme: ChipThemeData(
           backgroundColor: const Color(0x1AFFFFFF),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -153,7 +153,7 @@ class AppState extends ChangeNotifier {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: accentColor.withOpacity(0.5)),
+            borderSide: BorderSide(color: accentColor.withValues(alpha: 0.5)),
           ),
           labelStyle: const TextStyle(color: Color(0x99000000)),
         ),

@@ -51,7 +51,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
             decoration: BoxDecoration(
               color: const Color(0x1AFFFFFF),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withOpacity(0.08)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
             ),
             child: TabBar(
               controller: _tabController,
@@ -108,7 +108,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(2))),
+              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2))),
               const SizedBox(height: 16),
               Text(existing != null ? 'Edit Event' : 'New Event', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
               const SizedBox(height: 16),
@@ -118,7 +118,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                 decoration: InputDecoration(
                   labelText: 'Title',
                   labelStyle: GoogleFonts.inter(color: Colors.white54),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
                   focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: accent)),
                 ),
               ),
@@ -129,7 +129,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                 decoration: InputDecoration(
                   labelText: 'Description',
                   labelStyle: GoogleFonts.inter(color: Colors.white54),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
                   focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: accent)),
                 ),
               ),
@@ -141,7 +141,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                       icon: const Icon(Icons.calendar_today, size: 18, color: Colors.white54),
                       label: Text(DateFormat('MMM d').format(startDate), style: GoogleFonts.inter(color: Colors.white)),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.08)),
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
                       ),
                       onPressed: () async {
                         final d = await showDatePicker(context: ctx, initialDate: startDate, firstDate: DateTime(2020), lastDate: DateTime(2030));
@@ -155,7 +155,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                       icon: const Icon(Icons.access_time, size: 18, color: Colors.white54),
                       label: Text(startTime.format(ctx), style: GoogleFonts.inter(color: Colors.white)),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.08)),
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
                       ),
                       onPressed: () async {
                         final t = await showTimePicker(context: ctx, initialTime: startTime);
@@ -173,7 +173,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                       icon: const Icon(Icons.calendar_today, size: 18, color: Colors.white54),
                       label: Text(DateFormat('MMM d').format(endDate), style: GoogleFonts.inter(color: Colors.white)),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.08)),
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
                       ),
                       onPressed: () async {
                         final d = await showDatePicker(context: ctx, initialDate: endDate, firstDate: DateTime(2020), lastDate: DateTime(2030));
@@ -187,7 +187,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                       icon: const Icon(Icons.access_time, size: 18, color: Colors.white54),
                       label: Text(endTime.format(ctx), style: GoogleFonts.inter(color: Colors.white)),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.08)),
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
                       ),
                       onPressed: () async {
                         final t = await showTimePicker(context: ctx, initialTime: endTime);
@@ -277,7 +277,7 @@ class _MonthView extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isSelected ? accent : const Color(0x1AFFFFFF),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white.withOpacity(0.08)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -387,7 +387,7 @@ class _WeekView extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: isSelected ? accent : const Color(0x1AFFFFFF),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.white.withOpacity(0.08)),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                       ),
                       child: Column(
                         children: [

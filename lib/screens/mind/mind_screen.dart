@@ -52,12 +52,12 @@ class _MindScreenState extends State<MindScreen> with SingleTickerProviderStateM
                 decoration: BoxDecoration(
                   color: const Color(0x1AFFFFFF),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.white.withOpacity(0.08)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                 ),
                 child: TabBar(
                   controller: _tabController,
                   indicator: BoxDecoration(
-                    color: accent.withOpacity(0.3),
+                    color: accent.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   indicatorSize: TabBarIndicatorSize.tab,
@@ -329,7 +329,7 @@ class _ChannelsTab extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: const Color(0x1AFFFFFF),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white.withOpacity(0.08)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

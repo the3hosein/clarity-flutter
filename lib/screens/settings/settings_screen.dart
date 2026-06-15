@@ -59,7 +59,7 @@ class SettingsScreen extends StatelessWidget {
                   groupValue: appState.themeMode,
                   onChanged: (v) => appState.setThemeMode(v!),
                 ),
-                Divider(height: 1, color: Colors.white.withOpacity(0.08)),
+                Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
                 RadioListTile<ThemeMode>(
                   title: Text('Light', style: GoogleFonts.inter(color: Colors.white, fontSize: 14)),
                   activeColor: const Color(0xFF7C5CFC),
@@ -67,7 +67,7 @@ class SettingsScreen extends StatelessWidget {
                   groupValue: appState.themeMode,
                   onChanged: (v) => appState.setThemeMode(v!),
                 ),
-                Divider(height: 1, color: Colors.white.withOpacity(0.08)),
+                Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
                 RadioListTile<ThemeMode>(
                   title: Text('Dark', style: GoogleFonts.inter(color: Colors.white, fontSize: 14)),
                   activeColor: const Color(0xFF7C5CFC),
@@ -100,7 +100,7 @@ class SettingsScreen extends StatelessWidget {
                       color: color,
                       shape: BoxShape.circle,
                       border: isActive ? Border.all(color: Colors.white, width: 3) : null,
-                      boxShadow: isActive ? [BoxShadow(color: color.withOpacity(0.5), blurRadius: 8)] : null,
+                      boxShadow: isActive ? [BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 8)] : null,
                     ),
                   ),
                 );
@@ -154,7 +154,7 @@ class SettingsScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(2))),
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2))),
             const SizedBox(height: 16),
             Text('Edit Profile', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
             const SizedBox(height: 16),
@@ -164,7 +164,7 @@ class SettingsScreen extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Name',
                 labelStyle: GoogleFonts.inter(color: Colors.white54),
-                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
                 focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
               ),
             ),

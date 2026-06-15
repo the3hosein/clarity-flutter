@@ -16,124 +16,25 @@ jobs:
         with:
           channel: stable
 
-      - name: Create iOS platform files
+      - name: Setup iOS project
         run: |
           rm -rf ios
           flutter create --project-name clarity --platforms=ios .
           cd ios
-          # Change bundle ID
           sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = com.example.clarity;/PRODUCT_BUNDLE_IDENTIFIER = com.clarity.app;/' Runner.xcodeproj/project.pbxproj
-          # Flutter 3.44+ validates DEVELOPMENT_TEAM even with --no-codesign; add to xcconfig
           echo 'DEVELOPMENT_TEAM=0000000000' >> Flutter/Release.xcconfig
           echo 'DEVELOPMENT_TEAM=0000000000' >> Flutter/Debug.xcconfig
           echo 'DEVELOPMENT_TEAM=0000000000' >> Flutter/Profile.xcconfig
-          # Remove regenerated test file that references MyApp instead of ClarityApp
           rm -f ../test/widget_test.dart
-          # Verify the settings took effect
-          echo "=== Code Sign Settings in pbxproj ===" | tee -a /tmp/ios-setup.log
-          grep -En 'CODE_SIGN|DEVELOPMENT_TEAM|PRODUCT_BUNDLE' Runner.xcodeproj/project.pbxproj | tail -30 | while read line; do echo "::notice title=pbxproj-settings::$line"; done
-          echo "=== Show build settings via xcodebuild ===" | tee -a /tmp/ios-setup.log
-          xcodebuild -project Runner.xcodeproj -target Runner -showBuildSettings 2>&1 | grep -E 'CODE_SIGN|DEVELOPMENT_TEAM' | head -10 | while read line; do echo "::notice title=xcode-settings::$line"; done
 
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Diagnostic info
-        run: |
-          echo "=== Flutter version ===" | tee -a diagnostic.log
-          flutter --version 2>&1 | tee -a diagnostic.log
-          echo "=== Xcode version ===" | tee -a diagnostic.log
-          xcodebuild -version 2>/dev/null | tee -a diagnostic.log || echo "Xcode not found" | tee -a diagnostic.log
-          echo "=== macOS version ===" | tee -a diagnostic.log
-          sw_vers -productVersion 2>/dev/null | tee -a diagnostic.log || echo "sw_vers not available" | tee -a diagnostic.log
-          echo "=== CocoaPods version ===" | tee -a diagnostic.log
-          pod --version 2>/dev/null | tee -a diagnostic.log || echo "pod not found" | tee -a diagnostic.log
-          echo "=== Dart SDK ===" | tee -a diagnostic.log
-          dart --version 2>/dev/null | tee -a diagnostic.log
-
-      - name: Run analysis
-        run: |
-          flutter analyze 2>&1 | tee analysis.log
-          exit ${PIPESTATUS[0]}
-
-      - name: Install CocoaPods
-        run: |
-          cd ios
-          pod install --repo-update 2>&1 | tee pod-install.log || echo "CocoaPods setup had issues, continuing with Flutter build..."
+      - name: Analyze
+        run: flutter analyze
 
       - name: Build unsigned iOS app
-        run: |
-          flutter build ios --release --no-codesign 2>&1 | tee build.log
-          EXITCODE=${PIPESTATUS[0]}
-          exit $EXITCODE
-
-      - name: Expose build error as annotation
-        if: failure()
-        run: |
-          if [ -s build.log ]; then
-            echo "::error title=iOS Build Failed,file=build.log::$(head -100 build.log)"
-          fi
-          if [ -s analysis.log ]; then
-            cat analysis.log | head -100 | while read line; do echo "::error title=Anlz,file=analysis.log::$line"; done
-          fi
-          if [ -s diagnostic.log ]; then
-            grep -E 'Flutter|Xcode|macOS|CocoaPods|Dart' diagnostic.log | while read line; do echo "::notice title=diagnostic::$(echo $line | tr -d '\n')"; done
-          fi
-          echo "# ❌ iOS Build Failed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '## Build Log (last 50 lines)' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -50 build.log >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '## Diagnostic Info' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat diagnostic.log 2>/dev/null || echo "No diagnostic log" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '## Analysis Log' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat analysis.log 2>/dev/null || echo "No analysis log" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '## Pod Install Log' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat ios/pod-install.log 2>/dev/null || echo "No pod-install log" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '## iOS Setup Log (pbxproj check)' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat /tmp/ios-setup.log 2>/dev/null || echo "No ios-setup log" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-
-      - name: Upload logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: build.log
-
-      - name: Upload analysis log on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: analysis-log
-          path: analysis.log
-
-      - name: Upload pod-install log on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pod-install-log
-          path: ios/pod-install.log
-
-      - name: Upload diagnostic log on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: diagnostic-log
-          path: diagnostic.log
-
+        run: flutter build ios --release --no-codesign
 
       - name: Package unsigned IPA
         if: success()

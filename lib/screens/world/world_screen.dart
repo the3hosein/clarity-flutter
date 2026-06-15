@@ -48,7 +48,7 @@ class _WorldScreenState extends State<WorldScreen> with SingleTickerProviderStat
             decoration: BoxDecoration(
               color: const Color(0x1AFFFFFF),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withOpacity(0.08)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
             ),
             child: TabBar(
               controller: _tabController,
@@ -167,7 +167,7 @@ class _MoviesTab extends StatelessWidget {
           decoration: InputDecoration(
             labelText: 'Movie title',
             labelStyle: GoogleFonts.inter(color: Colors.white54),
-            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
             focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
           ),
         ),
@@ -261,7 +261,7 @@ class _MusicTab extends StatelessWidget {
           decoration: InputDecoration(
             labelText: 'Playlist name',
             labelStyle: GoogleFonts.inter(color: Colors.white54),
-            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
             focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
           ),
         ),
@@ -295,7 +295,7 @@ class _MusicTab extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Title',
                 labelStyle: GoogleFonts.inter(color: Colors.white54),
-                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
                 focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
               ),
             ),
@@ -306,7 +306,7 @@ class _MusicTab extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Artist',
                 labelStyle: GoogleFonts.inter(color: Colors.white54),
-                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
                 focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
               ),
             ),
@@ -415,7 +415,7 @@ class _BooksTab extends StatelessWidget {
           decoration: InputDecoration(
             labelText: 'Book title',
             labelStyle: GoogleFonts.inter(color: Colors.white54),
-            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
             focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
           ),
         ),
@@ -464,7 +464,7 @@ class _YouTubeTab extends StatelessWidget {
                         decoration: InputDecoration(
                           labelText: 'Folder name',
                           labelStyle: GoogleFonts.inter(color: Colors.white54),
-                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
                           focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
                         ),
                       ),
@@ -502,7 +502,7 @@ class _YouTubeTab extends StatelessWidget {
                       decoration: InputDecoration(
                         labelText: 'Folder name',
                         labelStyle: GoogleFonts.inter(color: Colors.white54),
-                        enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                        enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
                         focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
                       ),
                     ),
@@ -562,7 +562,7 @@ class _YouTubeTab extends StatelessWidget {
                             decoration: InputDecoration(
                               labelText: 'YouTube URL',
                               labelStyle: GoogleFonts.inter(color: Colors.white54),
-                              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
                               focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF7C5CFC))),
                             ),
                           ),

@@ -52,7 +52,7 @@ class _AnimatedProgressBarState extends State<AnimatedProgressBar> with SingleTi
         child: LinearProgressIndicator(
           value: widget.value * _animation.value,
           color: color,
-          backgroundColor: color.withOpacity(0.15),
+          backgroundColor: color.withValues(alpha: 0.15),
           minHeight: widget.height,
         ),
       ),

@@ -68,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 gradient: LinearGradient(
-                  colors: [accent, accent.withOpacity(0.2)],
+                  colors: [accent, accent.withValues(alpha: 0.2)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -220,7 +220,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ? (daily.habits.isEmpty ? 0 : daily.habits.where((h) => daily.isHabitDoneToday(h.id)).length / daily.habits.length)
                           : (daily.averageSleep / 12).clamp(0, 1),
                   strokeWidth: 3,
-                  backgroundColor: Colors.white.withOpacity(0.1),
+                  backgroundColor: Colors.white.withValues(alpha: 0.1),
                   valueColor: AlwaysStoppedAnimation<Color>(accent),
                 ),
                 Text(
