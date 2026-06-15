@@ -27,6 +27,8 @@ jobs:
           echo 'DEVELOPMENT_TEAM=0000000000' >> Flutter/Release.xcconfig
           echo 'DEVELOPMENT_TEAM=0000000000' >> Flutter/Debug.xcconfig
           echo 'DEVELOPMENT_TEAM=0000000000' >> Flutter/Profile.xcconfig
+          # Remove regenerated test file that references MyApp instead of ClarityApp
+          rm -f ../test/widget_test.dart
           # Verify the settings took effect
           echo "=== Code Sign Settings in pbxproj ===" | tee -a /tmp/ios-setup.log
           grep -En 'CODE_SIGN|DEVELOPMENT_TEAM|PRODUCT_BUNDLE' Runner.xcodeproj/project.pbxproj | tail -30 | while read line; do echo "::notice title=pbxproj-settings::$line"; done
