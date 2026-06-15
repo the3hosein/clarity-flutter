@@ -66,7 +66,7 @@ jobs:
         if: failure()
         run: |
           if [ -s build.log ]; then
-            echo "::error title=iOS Build Failed,file=build.log::$(tail -20 build.log)"
+            echo "::error title=iOS Build Failed,file=build.log::$(tail -50 build.log)"
           fi
           if [ -s diagnostic.log ]; then
             grep -E 'Flutter|Xcode|macOS|CocoaPods|Dart' diagnostic.log | while read line; do echo "::notice title=diagnostic::$(echo $line | tr -d '\n')"; done
