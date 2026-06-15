@@ -50,7 +50,9 @@ jobs:
           dart --version 2>/dev/null | tee -a diagnostic.log
 
       - name: Run analysis
-        run: flutter analyze 2>&1 | tee analysis.log
+        run: |
+          flutter analyze 2>&1 | tee analysis.log
+          exit ${PIPESTATUS[0]}
 
       - name: Install CocoaPods
         run: |
@@ -67,7 +69,10 @@ jobs:
         if: failure()
         run: |
           if [ -s build.log ]; then
-            echo "::error title=iOS Build Failed,file=build.log::$(tail -50 build.log)"
+            echo "::error title=iOS Build Failed,file=build.log::$(head -100 build.log)"
+          fi
+          if [ -s analysis.log ]; then
+            echo "::error title=Analysis Errors,file=analysis.log::$(head -100 analysis.log)"
           fi
           if [ -s diagnostic.log ]; then
             grep -E 'Flutter|Xcode|macOS|CocoaPods|Dart' diagnostic.log | while read line; do echo "::notice title=diagnostic::$(echo $line | tr -d '\n')"; done
