@@ -23,7 +23,8 @@ jobs:
           cd ios
           sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = com.example.clarity;/PRODUCT_BUNDLE_IDENTIFIER = com.clarity.app;/' Runner.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/DEVELOPMENT_TEAM = [^;]*;/DEVELOPMENT_TEAM = "";/g' Runner.xcodeproj/project.pbxproj
+          # Flutter now requires a non-empty DEVELOPMENT_TEAM even with --no-codesign
+          sed -i '' 's/DEVELOPMENT_TEAM = [^;]*;/DEVELOPMENT_TEAM = DUMMYTEAM;/g' Runner.xcodeproj/project.pbxproj
           sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = [^;]*;/PROVISIONING_PROFILE_SPECIFIER = "";/g' Runner.xcodeproj/project.pbxproj
           # Verify the settings took effect
           echo "=== Code Sign Settings in pbxproj ===" | tee -a /tmp/ios-setup.log
