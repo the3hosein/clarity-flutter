@@ -28,7 +28,9 @@ jobs:
           sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = [^;]*;/PROVISIONING_PROFILE_SPECIFIER = "";/g' Runner.xcodeproj/project.pbxproj
           # Verify the settings took effect
           echo "=== Code Sign Settings in pbxproj ===" | tee -a /tmp/ios-setup.log
-          grep -E 'CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING' Runner.xcodeproj/project.pbxproj | tee -a /tmp/ios-setup.log
+          grep -En 'CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING|PRODUCT_BUNDLE' Runner.xcodeproj/project.pbxproj | tail -30 | tee -a /tmp/ios-setup.log
+          echo "=== Show build settings via xcodebuild ===" | tee -a /tmp/ios-setup.log
+          xcodebuild -project Runner.xcodeproj -target Runner -showBuildSettings 2>&1 | grep -E 'CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING' | head -10 | tee -a /tmp/ios-setup.log
 
       - name: Get dependencies
         run: flutter pub get
