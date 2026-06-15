@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'glass_card.dart';
 
 class EmptyState extends StatelessWidget {
   final IconData icon;
