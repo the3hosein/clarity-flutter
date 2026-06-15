@@ -21,16 +21,27 @@ jobs:
           rm -rf ios
           flutter create --project-name clarity --platforms=ios .
           cd ios
+          # Change bundle ID
           sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = com.example.clarity;/PRODUCT_BUNDLE_IDENTIFIER = com.clarity.app;/' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' Runner.xcodeproj/project.pbxproj
-          # Flutter now requires a non-empty DEVELOPMENT_TEAM even with --no-codesign
-          sed -i '' 's/DEVELOPMENT_TEAM = [^;]*;/DEVELOPMENT_TEAM = DUMMYTEAM;/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = [^;]*;/PROVISIONING_PROFILE_SPECIFIER = "";/g' Runner.xcodeproj/project.pbxproj
-          # Verify the settings took effect - dump as notice so it's visible on run page
+          # Flutter now validates DEVELOPMENT_TEAM even with --no-codesign
+          python3 -c "
+import re
+with open('Runner.xcodeproj/project.pbxproj', 'r') as f:
+    content = f.read()
+# Change to Manual signing and add dummy team (preserving indentation)
+content = re.sub(
+    r'(\s*)(CODE_SIGN_STYLE) = Automatic;',
+    r'\1\2 = Manual;\n\1DEVELOPMENT_TEAM = DUMMYTEAM;',
+    content
+)
+with open('Runner.xcodeproj/project.pbxproj', 'w') as f:
+    f.write(content)
+"
+          # Verify the settings took effect
           echo "=== Code Sign Settings in pbxproj ===" | tee -a /tmp/ios-setup.log
-          grep -En 'CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING|PRODUCT_BUNDLE' Runner.xcodeproj/project.pbxproj | tail -30 | tee -a /tmp/ios-setup.log | while read line; do echo "::notice title=pbxproj-settings::$line"; done
+          grep -En 'CODE_SIGN|DEVELOPMENT_TEAM|PRODUCT_BUNDLE' Runner.xcodeproj/project.pbxproj | tail -30 | while read line; do echo "::notice title=pbxproj-settings::$line"; done
           echo "=== Show build settings via xcodebuild ===" | tee -a /tmp/ios-setup.log
-          xcodebuild -project Runner.xcodeproj -target Runner -showBuildSettings 2>&1 | grep -E 'CODE_SIGN|DEVELOPMENT_TEAM|PROVISIONING' | head -10 | tee -a /tmp/ios-setup.log | while read line; do echo "::notice title=xcode-settings::$line"; done
+          xcodebuild -project Runner.xcodeproj -target Runner -showBuildSettings 2>&1 | grep -E 'CODE_SIGN|DEVELOPMENT_TEAM' | head -10 | while read line; do echo "::notice title=xcode-settings::$line"; done
 
       - name: Get dependencies
         run: flutter pub get
