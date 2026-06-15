@@ -130,9 +130,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             // Summary rings
             Row(
               children: [
-                _buildSummaryRing(label: 'Lessons', value: '${daily.lessons.where((l) => l.status == 'done').length}'),
-                _buildSummaryRing(label: 'Sleep', value: '${daily.averageSleep.toStringAsFixed(1)}h'),
-                _buildSummaryRing(label: 'Habits', value: '${daily.habits.where((h) => daily.isHabitDoneToday(h.id)).length}'),
+                _buildSummaryRing(label: 'Lessons', value: '${daily.lessons.where((l) => l.status == 'done').length}', daily: daily),
+                _buildSummaryRing(label: 'Sleep', value: '${daily.averageSleep.toStringAsFixed(1)}h', daily: daily),
+                _buildSummaryRing(label: 'Habits', value: '${daily.habits.where((h) => daily.isHabitDoneToday(h.id)).length}', daily: daily),
               ].map((w) => Expanded(child: w)).toList(),
             ),
 
@@ -204,7 +204,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildSummaryRing({required String label, required String value}) {
+  Widget _buildSummaryRing({required String label, required String value, required DailyProvider daily}) {
     final accent = Theme.of(context).colorScheme.primary;
     return GlassCard(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
