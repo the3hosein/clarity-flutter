@@ -6,7 +6,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../providers/app_state.dart';
 import '../../providers/daily_provider.dart';
 import '../../providers/calendar_provider.dart';
-import '../../models/calendar_event.dart';
 import '../../services/weather_service.dart';
 import '../../widgets/glass_card.dart';
 
@@ -20,7 +19,6 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   String _weatherEmoji = '☀️';
   String _temperature = '--°';
-  bool _weatherLoaded = false;
 
   @override
   void initState() {
@@ -35,10 +33,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       setState(() {
         _weatherEmoji = WeatherService.weatherEmoji(current['weather_code'] ?? 0, current['is_day'] ?? 1);
         _temperature = '${current['temperature_2m']?.round() ?? '--'}°';
-        _weatherLoaded = true;
       });
     } catch (_) {
-      setState(() => _weatherLoaded = true);
+      setState(() {});
     }
   }
 
