@@ -299,7 +299,7 @@ class _MonthView extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    color: isSelected ? accent : (isToday ? accent.withValues(alpha: 0.12) : Colors.transparent),
+                    color: isSelected ? accent : (isToday ? accent.withOpacity( 0.12) : Colors.transparent),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Column(

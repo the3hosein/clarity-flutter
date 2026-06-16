@@ -70,7 +70,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 gradient: LinearGradient(
-                  colors: [accent, accent.withValues(alpha: 0.6)],
+                  colors: [accent, accent.withOpacity( 0.6)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -86,7 +86,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: accent.withValues(alpha: 0.15),
+                        color: accent.withOpacity( 0.15),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Center(child: Text(appState.avatarEmoji, style: const TextStyle(fontSize: 26))),

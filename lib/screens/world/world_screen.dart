@@ -122,8 +122,8 @@ class _MoviesTab extends StatelessWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: m.posterURL.isNotEmpty
-                            ? Image.network(m.posterURL, width: 44, height: 60, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(width: 44, height: 60, color: accent.withValues(alpha: 0.12), child: Icon(Icons.movie_rounded, color: accent)))
-                            : Container(width: 44, height: 60, color: accent.withValues(alpha: 0.12), child: Icon(Icons.movie_rounded, color: accent)),
+                            ? Image.network(m.posterURL, width: 44, height: 60, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(width: 44, height: 60, color: accent.withOpacity( 0.12), child: Icon(Icons.movie_rounded, color: accent)))
+                            : Container(width: 44, height: 60, color: accent.withOpacity( 0.12), child: Icon(Icons.movie_rounded, color: accent)),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -213,7 +213,7 @@ class _MusicTab extends StatelessWidget {
                     childrenPadding: const EdgeInsets.only(bottom: 8),
                     leading: Container(
                       width: 36, height: 36,
-                      decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
+                      decoration: BoxDecoration(color: accent.withOpacity( 0.12), borderRadius: BorderRadius.circular(8)),
                       child: Icon(Icons.queue_music_rounded, color: accent, size: 20),
                     ),
                     title: Text(pl.name, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: textPrimary, fontSize: 15)),
@@ -327,8 +327,8 @@ class _BooksTab extends StatelessWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(6),
                         child: b.coverURL.isNotEmpty
-                            ? Image.network(b.coverURL, width: 36, height: 52, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(width: 36, height: 52, color: accent.withValues(alpha: 0.12), child: Icon(Icons.book_rounded, color: accent)))
-                            : Container(width: 36, height: 52, color: accent.withValues(alpha: 0.12), child: Icon(Icons.book_rounded, color: accent)),
+                            ? Image.network(b.coverURL, width: 36, height: 52, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(width: 36, height: 52, color: accent.withOpacity( 0.12), child: Icon(Icons.book_rounded, color: accent)))
+                            : Container(width: 36, height: 52, color: accent.withOpacity( 0.12), child: Icon(Icons.book_rounded, color: accent)),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -465,7 +465,7 @@ class _YouTubeTab extends StatelessWidget {
                   childrenPadding: const EdgeInsets.only(bottom: 8),
                   leading: Container(
                     width: 36, height: 36,
-                    decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
+                    decoration: BoxDecoration(color: accent.withOpacity( 0.12), borderRadius: BorderRadius.circular(8)),
                     child: Icon(Icons.folder_rounded, color: accent, size: 20),
                   ),
                   title: Text(folder.name, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: textPrimary, fontSize: 15)),

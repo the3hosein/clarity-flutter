@@ -30,8 +30,12 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Analyze code
+        run: flutter analyze --no-pub 2>&1 | tee /tmp/analysis.log
+        continue-on-error: true
+
       - name: Build unsigned iOS app
-        run: flutter build ios --release --no-codesign
+        run: flutter build ios --release --no-codesign 2>&1 | tee /tmp/build.log
 
       - name: Package unsigned IPA
         if: success()
@@ -47,7 +51,17 @@ jobs:
           name: Clarity-iOS-IPA
           path: clarity-unsigned.ipa
 
-      - name: Show errors on failure
+      - name: Show diagnostics on failure
         if: failure()
         run: |
           echo "# Build Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Analysis Output" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/analysis.log 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No analysis log" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Build Output (last 100 lines)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -100 /tmp/build.log 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No build log" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

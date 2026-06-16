@@ -125,7 +125,7 @@ class _TargetsTab extends StatelessWidget {
                 children: [
                   Container(
                     width: 32, height: 32,
-                    decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
+                    decoration: BoxDecoration(color: accent.withOpacity( 0.12), borderRadius: BorderRadius.circular(8)),
                     child: Icon(Icons.flag_rounded, size: 18, color: accent),
                   ),
                   const SizedBox(width: 10),
@@ -289,7 +289,7 @@ class _ChannelsTab extends StatelessWidget {
                     children: [
                       Container(
                         width: 36, height: 36,
-                        decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
+                        decoration: BoxDecoration(color: accent.withOpacity( 0.12), borderRadius: BorderRadius.circular(10)),
                         child: Icon(Icons.tag_rounded, color: accent, size: 18),
                       ),
                       const SizedBox(width: 12),

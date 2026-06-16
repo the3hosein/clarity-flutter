@@ -192,7 +192,7 @@ class AppState extends ChangeNotifier {
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: Color(0xFF6C5CE7),
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14))),
         ),
         snackBarTheme: SnackBarThemeData(
           backgroundColor: Colors.white,

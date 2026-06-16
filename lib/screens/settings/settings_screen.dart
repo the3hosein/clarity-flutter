@@ -34,7 +34,7 @@ class SettingsScreen extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.12),
+                    color: accent.withOpacity( 0.12),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Center(child: Text(appState.avatarEmoji, style: const TextStyle(fontSize: 24))),
@@ -115,7 +115,7 @@ class SettingsScreen extends StatelessWidget {
                       color: color,
                       shape: BoxShape.circle,
                       border: isActive ? Border.all(color: textPrimary, width: 2.5) : null,
-                      boxShadow: isActive ? [BoxShadow(color: color.withValues(alpha: 0.4), blurRadius: 12)] : null,
+                      boxShadow: isActive ? [BoxShadow(color: color.withOpacity( 0.4), blurRadius: 12)] : null,
                     ),
                     child: isActive ? const Icon(Icons.check, size: 18, color: Colors.white) : null,
                   ),
@@ -219,7 +219,7 @@ class SettingsScreen extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: appState.avatarEmoji == e ? accent.withValues(alpha: 0.15) : Colors.transparent,
+                    color: appState.avatarEmoji == e ? accent.withOpacity( 0.15) : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                     border: appState.avatarEmoji == e ? Border.all(color: accent) : null,
                   ),

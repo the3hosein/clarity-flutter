@@ -137,7 +137,7 @@ class _Sidebar extends StatelessWidget {
     final bgColor = isDark ? const Color(0xFF161622) : Colors.white;
     final textColor = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
     final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
-    final activeBg = accent.withValues(alpha: 0.12);
+    final activeBg = accent.withOpacity( 0.12);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -219,7 +219,7 @@ class _SidebarItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final textColor = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
     final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
-    final activeBg = accent.withValues(alpha: 0.12);
+    final activeBg = accent.withOpacity( 0.12);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -270,7 +270,7 @@ class _BottomTabBar extends StatelessWidget {
     final bgColor = isDark ? const Color(0xFF161622) : Colors.white;
     final textColor = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
     final textSecondary = isDark ? const Color(0xFF5C5C6F) : const Color(0xFF9B9BB0);
-    final activeBg = accent.withValues(alpha: 0.12);
+    final activeBg = accent.withOpacity( 0.12);
     final borderColor = isDark ? const Color(0xFF2A2A3D) : const Color(0xFFE8E8F0);
 
     return Container(

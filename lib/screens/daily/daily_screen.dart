@@ -122,7 +122,7 @@ class _LessonsTab extends StatelessWidget {
                     children: [
                       Container(
                         width: 40, height: 40,
-                        decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
+                        decoration: BoxDecoration(color: accent.withOpacity( 0.12), borderRadius: BorderRadius.circular(10)),
                         child: Center(
                           child: Text(l.subject.isNotEmpty ? l.subject[0].toUpperCase() : '?',
                               style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: accent, fontSize: 16)),
@@ -373,7 +373,7 @@ class _SocialTab extends StatelessWidget {
                     children: [
                       Container(
                         width: 40, height: 40,
-                        decoration: BoxDecoration(color: _platformColor(p.name).withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
+                        decoration: BoxDecoration(color: _platformColor(p.name).withOpacity( 0.15), borderRadius: BorderRadius.circular(10)),
                         child: Icon(_platformIcon(p.name), color: _platformColor(p.name), size: 20),
                       ),
                       const SizedBox(width: 12),

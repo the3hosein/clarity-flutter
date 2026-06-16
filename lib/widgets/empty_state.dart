@@ -36,7 +36,7 @@ class EmptyState extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [accent.withValues(alpha: 0.15), accent.withValues(alpha: 0.05)],
+                  colors: [accent.withOpacity( 0.15), accent.withOpacity( 0.05)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
