@@ -273,6 +273,7 @@ class _SleepTab extends StatelessWidget {
     final accent = Theme.of(context).colorScheme.primary;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textPrimary = isDark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    final textSecondary = isDark ? const Color(0xFF8E8EA0) : const Color(0xFF6B6B80);
     TimeOfDay bedtime = const TimeOfDay(hour: 23, minute: 0);
     TimeOfDay wakeTime = const TimeOfDay(hour: 7, minute: 0);
 
