@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #F2F2F7;
+  --card: #FFFFFF;
+  --accent: #007AFF;
+  --accent-hover: #0066D6;
+  --text-primary: #1A1A2E;
+  --text-secondary: #6B6B80;
+  --text-tertiary: #8E8EA0;
+  --border: #E8E8F0;
+  --glass: rgba(255,255,255,0.78);
+  --glass-border: rgba(255,255,255,0.3);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.1);
+  --shadow-xl: 0 12px 40px rgba(0,0,0,0.15);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+.dark {
+  --bg: #161622;
+  --card: #1C1C2B;
+  --accent: #0A84FF;
+  --accent-hover: #3395FF;
+  --text-primary: #F1F1F6;
+  --text-secondary: #8E8EA0;
+  --text-tertiary: #636375;
+  --border: #2A2A3D;
+  --glass: rgba(22,22,34,0.82);
+  --glass-border: rgba(255,255,255,0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+  --shadow-xl: 0 12px 40px rgba(0,0,0,0.5);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  height: 100dvh;
+  width: 100dvw;
+}
+
+#root {
+  height: 100dvh;
+  width: 100dvw;
+  overflow: hidden;
+}
+
+input, textarea, select, button { font-family: inherit; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-tertiary); border-radius: 4px; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--border) 25%, var(--card) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-left { padding-left: env(safe-area-inset-left); }
+  .safe-right { padding-right: env(safe-area-inset-right); }
+}
