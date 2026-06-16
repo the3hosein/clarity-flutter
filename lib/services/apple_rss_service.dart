@@ -46,4 +46,25 @@ class AppleRSSService {
     final data = jsonDecode(r.body);
     return (data['feed']['results'] as List).map((e) => AppleRSSItem.fromJson(e)).toList();
   }
+
+  static Future<List<AppleRSSItem>> search(String term) async {
+    if (term.trim().isEmpty) return [];
+    final r = await http.get(Uri.parse('https://itunes.apple.com/search?term=${Uri.encodeComponent(term)}&media=all&limit=20'));
+    final data = jsonDecode(r.body);
+    return (data['results'] as List).map((e) {
+      final wrapper = e['wrapperType'] ?? '';
+      final kind = e['kind'] ?? '';
+      final isMovie = kind == 'feature-movie';
+      final isMusic = wrapper == 'track' && kind != 'feature-movie';
+      final isBook = wrapper == 'ebook';
+      return AppleRSSItem(
+        id: '${e['trackId'] ?? e['collectionId'] ?? ''}',
+        name: e['trackName'] ?? e['collectionName'] ?? '',
+        artistName: e['artistName'] ?? '',
+        artworkUrl: (e['artworkUrl100'] ?? '').replaceAll('100x100', '400x400'),
+        url: e['trackViewUrl'] ?? e['collectionViewUrl'] ?? '',
+        genres: e['primaryGenreName'] != null ? [e['primaryGenreName']] : [],
+      );
+    }).toList();
+  }
 }
