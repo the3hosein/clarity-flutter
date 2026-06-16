@@ -304,7 +304,10 @@ class MindScreen extends StatelessWidget {
   Widget _moodEmoji(BuildContext c, String emoji, int value, MindProvider mind) {
     return GestureDetector(
       onTap: () => mind.setCurrentMood(value),
-      child: Text(emoji, style: TextStyle(fontSize: 28, opacity: mind.currentMood == value ? 1.0 : 0.4)),
+      child: Opacity(
+        opacity: mind.currentMood == value ? 1.0 : 0.4,
+        child: Text(emoji, style: const TextStyle(fontSize: 28)),
+      ),
     );
   }
 
