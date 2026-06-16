@@ -9,6 +9,9 @@ class MindProvider extends ChangeNotifier {
   List<JournalEntry> _journalEntries = [];
   List<Channel> _channels = [];
 
+  int _currentMood = 3;
+
+  int get currentMood => _currentMood;
   List<Target> get targets => _targets;
   List<JournalEntry> get journalEntries => _journalEntries;
   List<Channel> get channels => _channels;
@@ -19,6 +22,11 @@ class MindProvider extends ChangeNotifier {
     _targets = await StorageService.loadList('targets', Target.fromJson);
     _journalEntries = await StorageService.loadList('journalEntries', JournalEntry.fromJson);
     _channels = await StorageService.loadList('channels', Channel.fromJson);
+    notifyListeners();
+  }
+
+  void setCurrentMood(int mood) {
+    _currentMood = mood;
     notifyListeners();
   }
 

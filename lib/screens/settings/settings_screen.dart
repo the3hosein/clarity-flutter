@@ -22,25 +22,28 @@ class SettingsScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 48, height: 48,
-                  decoration: BoxDecoration(color: accent.withOpacity(0.12), borderRadius: BorderRadius.circular(14)),
-                  child: Center(child: Text(appState.avatarEmoji, style: const TextStyle(fontSize: 24))),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(appState.userName, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: textPrimary, fontSize: 16)),
-                      Text('Tap to edit profile', style: GoogleFonts.inter(fontSize: 13, color: textSecondary)),
-                    ],
+            GestureDetector(
+              onTap: () => _editProfile(context, appState),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48, height: 48,
+                    decoration: BoxDecoration(color: accent.withOpacity(0.12), borderRadius: BorderRadius.circular(14)),
+                    child: Center(child: Text(appState.avatarEmoji, style: const TextStyle(fontSize: 24))),
                   ),
-                ),
-                Icon(Icons.chevron_right_rounded, color: textSecondary, size: 22),
-              ],
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(appState.userName, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: textPrimary, fontSize: 16)),
+                        Text('Tap to edit profile', style: GoogleFonts.inter(fontSize: 13, color: textSecondary)),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.chevron_right_rounded, color: textSecondary, size: 22),
+                ],
+              ),
             ),
             const SizedBox(height: 28),
             Text('APPEARANCE', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: textSecondary, letterSpacing: 1)),
@@ -111,6 +114,51 @@ class SettingsScreen extends StatelessWidget {
             Center(child: Text('Clarity v3.0', style: GoogleFonts.inter(color: textSecondary, fontSize: 13))),
           ],
         ),
+      ),
+    );
+  }
+
+  void _editProfile(BuildContext context, AppState appState) {
+    final nameC = TextEditingController(text: appState.userName);
+    final a = Theme.of(context).colorScheme.primary;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final t1 = dark ? const Color(0xFFF1F1F6) : const Color(0xFF1A1A2E);
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(width: 36, height: 4, decoration: BoxDecoration(color: dark ? const Color(0xFF2A2A3D) : const Color(0xFFE8E8F0), borderRadius: BorderRadius.circular(2))),
+          const SizedBox(height: 20),
+          Text('Edit Profile', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: t1)),
+          const SizedBox(height: 20),
+          TextField(controller: nameC, style: GoogleFonts.inter(color: t1), decoration: InputDecoration(labelText: 'Name', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+          const SizedBox(height: 16),
+          Text('Pick Avatar', style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: t1)),
+          const SizedBox(height: 10),
+          Wrap(spacing: 12, runSpacing: 8, children: ['😊', '🦁', '🐱', '🐶', '🦄', '🌟', '🔥', '🧠', '💪', '🎯'].map((e) => GestureDetector(
+            onTap: () { appState.setAvatarEmoji(e); Navigator.pop(ctx); },
+            child: Container(
+              width: 44, height: 44,
+              decoration: BoxDecoration(
+                color: appState.avatarEmoji == e ? a.withOpacity(0.15) : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                border: appState.avatarEmoji == e ? Border.all(color: a) : null,
+              ),
+              child: Center(child: Text(e, style: const TextStyle(fontSize: 24))),
+            ),
+          )).toList()),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: a, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.symmetric(vertical: 14)),
+              onPressed: () { appState.setUserName(nameC.text); Navigator.pop(ctx); },
+              child: Text('Save', style: GoogleFonts.inter()),
+            ),
+          ),
+        ]),
       ),
     );
   }
