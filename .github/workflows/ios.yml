@@ -30,17 +30,22 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Analyze code
+        run: flutter analyze --no-pub 2>&1 | tee /tmp/analysis.log || true
+
       - name: Build unsigned iOS app
-        run: flutter build ios --release --no-codesign
+        run: flutter build ios --release --no-codesign --verbose 2>&1 | tee /tmp/build.log || true
 
       - name: Package unsigned IPA
         if: success()
         run: |
-          # Find the .app bundle
-          APP_PATH=$(find build/ios/iphoneos -name "*.app" -type d | head -1)
+          find build/ios -name "*.app" -type d 2>&1 || echo "No .app found"
+          ls -la build/ios/ 2>&1 || true
+          APP_PATH=$(find build/ios/iphoneos -name "*.app" -type d 2>/dev/null | head -1)
           if [ -z "$APP_PATH" ]; then
-            echo "ERROR: No .app bundle found"
-            find build/ios -type d -name "*.app"
+            echo "ERROR: No .app bundle found in build/ios/iphoneos"
+            echo "Contents of build/ios:"
+            find build/ios -maxdepth 3 -type d 2>&1
             exit 1
           fi
           echo "Found app at: $APP_PATH"
@@ -48,7 +53,7 @@ jobs:
           mkdir -p Payload
           cp -R "$APP_PATH" Payload/
           zip -r clarity-unsigned.ipa Payload/
-          echo "IPA created: $(ls -la clarity-unsigned.ipa)"
+          echo "IPA created successfully"
 
       - name: Upload IPA
         if: success()
@@ -56,3 +61,16 @@ jobs:
         with:
           name: Clarity-iOS-IPA
           path: clarity-unsigned.ipa
+
+      - name: Dump diagnostics on failure
+        if: always()
+        run: |
+          echo "=== ANALYSIS LOG ===" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/analysis.log 2>/dev/null || echo "No analysis log" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "=== BUILD LOG (last 200 lines) ===" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -200 /tmp/build.log 2>/dev/null || echo "No build log" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
